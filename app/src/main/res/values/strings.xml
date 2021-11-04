@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Services publics</string>
+    <string name="app_title_header">MES SERVICES PUBLICS</string>
+    <string name="menu_assemblee_nationale_title">Menu assemblée nationale</string>
+    <string name="footer_string">FOOTER</string>
 </resources>
