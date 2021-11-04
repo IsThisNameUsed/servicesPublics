@@ -3,7 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/activity_main.xml" value="0.4" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/activity_service.xml" value="0.17604166666666668" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/footer.xml" value="0.19322916666666667" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/header.xml" value="0.19322916666666667" />
         <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/national_assembly_main_menu.xml" value="0.2" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/national_assembly_menu.xml" value="0.13020833333333334" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/raw_member_assembly.xml" value="0.16666666666666666" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/raw_vote.xml" value="0.16510416666666666" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/row_vote.xml" value="0.14583333333333334" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/search_by_vote_details_screen.xml" value="0.11979166666666667" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/search_by_vote_mainScreen.xml" value="0.16510416666666666" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/search_by_vote_main_screen.xml" value="0.264" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/search_by_vote_screen.xml" value="0.264" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/search_by_vote_screen1.xml" value="0.2" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/search_by_vote_screen2.xml" value="0.264" />
+        <entry key="..\:/Dev/Android-Projects/Servicespublics/app/src/main/res/layout/table_row.xml" value="0.19322916666666667" />
       </map>
     </option>
   </component>

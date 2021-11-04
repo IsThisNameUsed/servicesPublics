@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/header"/>
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/search_by_vote_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="Détails du vote"
+            android:textSize="21sp" />
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/search_by_vote_title"
+            android:scrollbars="none"
+            android:layout_weight="1"
+            android:layout_marginBottom="30dp">
+            <TableLayout
+                android:id="@+id/details_vote_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/search_by_vote_title"
+                android:layout_marginTop="20dp">
+
+                <TableRow android:weightSum="15"
+                    android:background="@color/raw_white">
+                    <TextView
+                        android:layout_column="0"
+                        android:layout_weight="7"
+                        android:gravity="center"
+                        android:padding="3dip"
+                        android:text="Nom" />
+
+                    <TextView
+                        android:layout_column="1"
+                        android:layout_weight="7"
+                        android:gravity="center"
+                        android:padding="3dip"
+                        android:text="Parti" />
+
+                    <TextView
+                        android:layout_column="2"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="3dip"
+                        android:text="vote" />
+                </TableRow>
+                <TableRow android:weightSum="15"
+                    android:background="@color/raw_grey">
+                    <TextView
+                        android:layout_column="0"
+                        android:layout_weight="7"
+                        android:gravity="center"
+                        android:padding="3dip"
+                        android:text="Jean Morand" />
+
+                    <TextView
+                        android:layout_column="1"
+                        android:layout_weight="7"
+                        android:gravity="center"
+                        android:padding="3dip"
+                        android:text="parti Socialiste" />
+
+                    <TextView
+                        android:layout_column="2"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="3dip"
+                        android:text="Pour" />
+                </TableRow>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_member_assembly"></include>
+
+            </TableLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+    <include layout="@layout/footer"/>
+
+</RelativeLayout>
