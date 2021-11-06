@@ -38,74 +38,27 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/search_by_vote_title"
                 android:layout_marginTop="20dp">
-
-                <TableRow android:weightSum="15"
-                    android:background="@color/raw_white">
-                    <TextView
-                        android:layout_column="0"
-                        android:layout_weight="7"
-                        android:gravity="center"
-                        android:padding="3dip"
-                        android:text="Nom" />
-
-                    <TextView
-                        android:layout_column="1"
-                        android:layout_weight="7"
-                        android:gravity="center"
-                        android:padding="3dip"
-                        android:text="Parti" />
-
-                    <TextView
-                        android:layout_column="2"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="3dip"
-                        android:text="vote" />
-                </TableRow>
-                <TableRow android:weightSum="15"
-                    android:background="@color/raw_grey">
-                    <TextView
-                        android:layout_column="0"
-                        android:layout_weight="7"
-                        android:gravity="center"
-                        android:padding="3dip"
-                        android:text="Jean Morand" />
-
-                    <TextView
-                        android:layout_column="1"
-                        android:layout_weight="7"
-                        android:gravity="center"
-                        android:padding="3dip"
-                        android:text="parti Socialiste" />
-
-                    <TextView
-                        android:layout_column="2"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="3dip"
-                        android:text="Pour" />
-                </TableRow>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
-                <include layout="@layout/raw_member_assembly"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
+                <include layout="@layout/raw_assembly_member1"></include>
 
             </TableLayout>
         </ScrollView>

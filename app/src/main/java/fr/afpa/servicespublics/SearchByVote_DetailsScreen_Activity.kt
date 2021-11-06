@@ -29,7 +29,7 @@ class SearchByVote_DetailsScreen_Activity : AppCompatActivity() {
         // Get informations with the api about the vote of all members of the assembly and fill rows with them
         var tableLayout = findViewById<TableLayout>(R.id.details_vote_table)
         val li = LayoutInflater.from(applicationContext)
-        val row = li.inflate(R.layout.raw_member_assembly, null)
+        val row = li.inflate(R.layout.raw_assembly_member1, null)
 
         for(i in 0..60){
             val row = li.inflate(R.layout.raw_vote, null)

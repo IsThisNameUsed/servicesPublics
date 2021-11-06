@@ -22,6 +22,8 @@
         <activity android:name=".SearchByVote_DetailsScreen_Activity" android:parentActivityName=".MainActivity"/>
         <activity android:name=".NationalAssembly_Menu_Activity" android:parentActivityName=".MainActivity"/>
         <activity android:name=".SearchByVote_Screen1_Activity" android:parentActivityName=".MainActivity"/>
+        <activity android:name=".SearchByAssemblyMemberScreen1_Activity" android:parentActivityName=".MainActivity"/>
+        <activity android:name=".SearchByAssemblyMemberInfoVote_Activity" android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>
