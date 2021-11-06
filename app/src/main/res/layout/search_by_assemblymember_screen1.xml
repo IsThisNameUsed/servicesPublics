@@ -24,7 +24,14 @@
             android:text="Recherche par député"
             android:textSize="15sp"
             android:gravity="center_horizontal"/>
-
+        <Button
+            android:id="@+id/testButton_toDetailsScreen"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/searchBy_assemblyMember_Title"
+            android:text="Test Details" />
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_inputField"
             android:layout_width="200dp"
