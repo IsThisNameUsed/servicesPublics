@@ -26,4 +26,6 @@
         <activity android:name=".SearchByAssemblyMemberInfoVote_Activity" android:parentActivityName=".MainActivity"/>
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
 </manifest>

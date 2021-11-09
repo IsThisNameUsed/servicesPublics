@@ -26,7 +26,7 @@ class SearchByVote_DetailsScreen_Activity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
         }
 
-        // Get informations with the api about the vote of all members of the assembly and fill rows with them
+        // Get informations with the fr.afpa.servicespublics.api about the vote of all members of the assembly and fill rows with them
         var tableLayout = findViewById<TableLayout>(R.id.details_vote_table)
         val li = LayoutInflater.from(applicationContext)
         val row = li.inflate(R.layout.raw_assembly_member1, null)
