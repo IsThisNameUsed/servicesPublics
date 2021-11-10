@@ -1,5 +1,20 @@
 <resources>
     <string name="app_name">Services publics</string>
+    <string-array name="villes">
+        <item>Sélectionner votre ville</item>
+        <item>VilleA</item>
+        <item>VilleB</item>
+    </string-array>
+    <string-array name="services">
+        <item>Sélectionner votre service</item>
+        <item>ServiceA</item>
+    </string-array>
+    <string-array name="entites">
+        <item>Sélectionner votre entité</item>
+        <item>ServiceA EntitéA</item>
+        <item>ServiceA EntitéB</item>
+        <item>ServiceA EntitéC</item>
+    </string-array>
     <string name="app_title_header">MES SERVICES PUBLICS</string>
     <string name="menu_assemblee_nationale_title">Menu assemblée nationale</string>
     <string name="footer_string">FOOTER</string>

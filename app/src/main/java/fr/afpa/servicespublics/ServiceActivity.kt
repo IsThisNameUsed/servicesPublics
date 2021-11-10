@@ -10,6 +10,8 @@ import fr.afpa.servicespublics.metier.CityJsonObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 
 class ServiceActivity : AppCompatActivity() {
 
@@ -23,6 +25,23 @@ class ServiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service)
 
+        /* Récupère les données des villes et services par le biais du fichier xml */
+        val villes = resources.getStringArray(R.array.villes)
+        val services = resources.getStringArray(R.array.services)
+        val entites = resources.getStringArray(R.array.entites)
+
+        /* Créé les ArrayAdapters qui vont servir à voir les données sous forme de Spinner */
+        val adapterVilles = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, villes)
+        val adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, services)
+        val adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entites)
+
+        /* Récupère les Spinners existants et les lie aux ArrayAdapters adéquates */
+        val spinner_villes = findViewById<Spinner>(R.id.spinner_villes)
+        spinner_villes.adapter = adapterVilles
+        val spinner_services = findViewById<Spinner>(R.id.spinner_services)
+        spinner_services.adapter = adapterServices
+        val spinner_entites = findViewById<Spinner>(R.id.spinner_entites)
+        spinner_entites.adapter = adapterEntites
         input_cityName = findViewById(R.id.ville_plain_text)
         input_cityCode = findViewById(R.id.code_postal_plain_text)
         val search_button = findViewById<Button>(R.id.bouton_recherche)
