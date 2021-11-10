@@ -13,9 +13,11 @@ import retrofit2.Response
 
 class ServiceActivity : AppCompatActivity() {
 
+    //region init
     var clientAPI = ClientApi()
     lateinit var input_cityName : TextView
     lateinit var input_cityCode : TextView
+    var typeServicesList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police", "mairie", "prefecture", "sous-pref")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,92 @@ class ServiceActivity : AppCompatActivity() {
         }
     }
 
+    //endregion init
+
+    //region appel API's
+    fun getCityCodeWithName(cityName:String): String {
+        var cityCode=""
+        clientAPI.service.getCityCodeWithName(cityName).enqueue(object : Callback<List<CityJsonObject>> {
+
+            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
+                val citiesList = response.body()
+
+                if(citiesList == null)
+                    Log.d("API", "error, response.body is empty")
+
+                if(citiesList?.size == 0)
+                    displayNoCityAvailable()
+
+                citiesList?.let {
+                    chooseCity(citiesList)
+                    //debug
+                    displayPostalCode(citiesList[0])
+                    cityCode = citiesList[0].code
+                    Log.d("", "SUCCESS")
+                }
+            }
+            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
+                Log.e("REG", "Error : $t")
+            }
+        })
+
+        return cityCode
+    }
+
+    fun getCityCodeWithPostalCode(postalCode: String) {
+        var cityCode=""
+
+        clientAPI.service.getCityCodeWithPostalCode(postalCode).enqueue(object : Callback<List<CityJsonObject>> {
+            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
+                val citiesList = response.body()
+
+                if(citiesList == null)
+                    Log.d("API", "error, response.body is empty")
+
+                if(citiesList?.size == 0)
+                    displayNoCityAvailable()
+
+                citiesList?.let {
+                    chooseCity(citiesList)
+                    //Debug
+                    displayPostalCode(citiesList[0])
+                    cityCode = citiesList[0].code
+                    displayCityname(citiesList[0])
+                    Log.d("", "SUCCESS")
+                }
+            }
+            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
+                Log.e("REG", "Error : $t")
+            }
+        })
+    }
+
+    fun getServiceDetails(cityName:String, typeService:String) {
+        //On accède ici par le choix d'une ville ET d'un type de service dans les spinners appropriés
+        clientAPI.service.getServiceInCity(cityName, typeService).enqueue(object : Callback<List<CityJsonObject>> {
+
+            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
+                val citiesList = response.body()
+
+                if(citiesList == null)
+                    Log.d("API", "error, response.body is empty")
+
+                if(citiesList?.size == 0)
+                    displayNoCityAvailable()
+
+                citiesList?.let {
+                    Log.d("", "SUCCESS")
+                }
+            }
+            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
+                Log.e("REG", "Error : $t")
+            }
+        })
+    }
+
+    //endregion
+
+    //region select city and service
     fun launchResearch() {
         var cityCode: String
         val postalCode = input_cityCode.text.toString()
@@ -48,54 +136,37 @@ class ServiceActivity : AppCompatActivity() {
 
         for(char in code)
         {
-          if(char.code <48 || char.code>57)
-              return false
+            if(char.code <48 || char.code>57)
+                return false
         }
         return true
     }
 
-    fun getCityCodeWithName(cityName:String): String {
-        var cityCode=""
-        clientAPI.service.getCityCodeWithName(cityName).enqueue(object : Callback<List<CityJsonObject>> {
+    fun chooseCity(citiesList: List<CityJsonObject>){
 
-            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
-                val jsonObject = response.body()
+        if(citiesList.size == 1) {
+            //Afficher le spinner du choix de services dans cette ville
+        }
+        else{
+            //Afficher le spinner du choix de ville
+        }
+    }
+    //endregion select city and service
 
-                jsonObject?.let {
-                    displayPostalCode(jsonObject[0])
-                    cityCode = jsonObject[0].code
-                    Log.d("", "SUCCESS")
-                }
-            }
-            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
-                Log.e("REG", "Error : $t")
-            }
-        })
+    //region displaying
+    fun displayServiceDetails()
+    {
 
-        return cityCode
     }
 
-    fun getCityCodeWithPostalCode(postalCode: String) {
-        var cityCode=""
-
-        clientAPI.service.getCityCodeWithPostalCode(postalCode).enqueue(object : Callback<List<CityJsonObject>> {
-            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
-                val jsonObject = response.body()
-
-                jsonObject?.let {
-                    displayPostalCode(jsonObject[0])
-                    cityCode = jsonObject[0].code
-                    displayCityname(jsonObject[0])
-                    Log.d("", "SUCCESS")
-                }
-            }
-            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
-                Log.e("REG", "Error : $t")
-            }
-        })
+    fun displayNoCityAvailable()
+    {
+        //Afficher un message comme quoi la recherche n'a pas aboutie avec les données renseignées
     }
 
-    //TEST et DEBUG
+    //endregion displaying
+
+    //region TEST et DEBUG
     fun displayPostalCode(jsonObject: CityJsonObject){
         input_cityCode.text = jsonObject.code
     }
@@ -103,4 +174,6 @@ class ServiceActivity : AppCompatActivity() {
     fun displayCityname(jsonObject: CityJsonObject){
         input_cityName.text = jsonObject.nom
     }
+
+    //endregion TEST et DEBUG
 }

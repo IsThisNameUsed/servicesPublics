@@ -17,4 +17,7 @@ interface IFindCityApi {
 
     @GET("communes?")
     fun getCityCodeWithPostalCode(@Query("codePostal")codePostal: String): Call<List<CityJsonObject>>
+
+    @GET("communes/{codeCommune}/{typeService}")
+    fun getServiceInCity(@Path("codeCommune")codePostal: String, @Path("typeService")typeService: String): Call<List<CityJsonObject>>
 }
