@@ -15,4 +15,6 @@
         <item>ServiceA EntitéB</item>
         <item>ServiceA EntitéC</item>
     </string-array>
+    <string name="menu_assemblee_nationale_title">Menu assemblée nationale</string>
+    <string name="footer_string">FOOTER</string>
 </resources>
