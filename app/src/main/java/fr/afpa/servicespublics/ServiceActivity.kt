@@ -35,7 +35,7 @@ class ServiceActivity : AppCompatActivity() {
         val cityName = input_cityName.text.toString()
         val codeValid = checkCityCodeValidity(postalCode)
         if(codeValid)
-            getCityCodeWithPostalCode()
+            getCityCodeWithPostalCode(postalCode)
         else if(cityName.isNotEmpty()){
             cityCode = getCityCodeWithName(cityName)
         }
@@ -56,38 +56,51 @@ class ServiceActivity : AppCompatActivity() {
 
     fun getCityCodeWithName(cityName:String): String {
         var cityCode=""
-        clientAPI.service.getCityCode(cityName).enqueue(object : Callback<List<CityJsonObject>> {
+        clientAPI.service.getCityCodeWithName(cityName).enqueue(object : Callback<List<CityJsonObject>> {
 
             override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
                 val jsonObject = response.body()
 
                 jsonObject?.let {
-                    displayCityCode(jsonObject[1])
-                    cityCode = jsonObject[1].code
+                    displayPostalCode(jsonObject[0])
+                    cityCode = jsonObject[0].code
                     Log.d("", "SUCCESS")
                 }
             }
             override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
                 Log.e("REG", "Error : $t")
-                Log.d("", "Failure")
             }
         })
 
         return cityCode
     }
 
-    fun displayCityCode(jsonObject: CityJsonObject){
+    fun getCityCodeWithPostalCode(postalCode: String) {
+        var cityCode=""
+
+        clientAPI.service.getCityCodeWithPostalCode(postalCode).enqueue(object : Callback<List<CityJsonObject>> {
+            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
+                val jsonObject = response.body()
+
+                jsonObject?.let {
+                    displayPostalCode(jsonObject[0])
+                    cityCode = jsonObject[0].code
+                    displayCityname(jsonObject[0])
+                    Log.d("", "SUCCESS")
+                }
+            }
+            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
+                Log.e("REG", "Error : $t")
+            }
+        })
+    }
+
+    //TEST et DEBUG
+    fun displayPostalCode(jsonObject: CityJsonObject){
         input_cityCode.text = jsonObject.code
-        Log.d("code postal:", jsonObject.code)
-        Log.d("", "SUCCESS")
     }
 
-    fun callFindCityApi()
-    {
-
-    }
-
-    fun getCityCodeWithPostalCode() {
-
+    fun displayCityname(jsonObject: CityJsonObject){
+        input_cityName.text = jsonObject.nom
     }
 }

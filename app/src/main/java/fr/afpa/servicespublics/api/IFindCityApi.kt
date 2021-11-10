@@ -12,6 +12,9 @@ interface IFindCityApi {
         val ENDPOINT="https://geo.api.gouv.fr/"
     }
 
-    @GET("communes?nom")
-    fun getCityCode(@Query("nom")nom: String): Call<List<CityJsonObject>>
+    @GET("communes?")
+    fun getCityCodeWithName(@Query("nom")nom: String): Call<List<CityJsonObject>>
+
+    @GET("communes?")
+    fun getCityCodeWithPostalCode(@Query("codePostal")codePostal: String): Call<List<CityJsonObject>>
 }
