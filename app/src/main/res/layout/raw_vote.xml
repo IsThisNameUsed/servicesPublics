@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:weightSum="15">
+    <Button
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:id="@+id/column0"
+        android:layout_column="0"
+        android:layout_weight="12"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="Vote"
+        android:textColor="@color/black"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/column1"
+        android:layout_column="1"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="102" />
+
+    <TextView
+        android:id="@+id/column2"
+        android:layout_column="2"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="234" />
+
+    <TextView
+        android:id="@+id/column3"
+        android:layout_column="2"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="44°" />
+</TableRow>
+
+

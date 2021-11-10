@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/header"/>
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/searchBy_assemblyMember_Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:text="Recherche par député"
+            android:textSize="15sp"
+            android:gravity="center_horizontal"/>
+        <Button
+            android:id="@+id/testButton_toDetailsScreen"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/searchBy_assemblyMember_Title"
+            android:text="Test Details" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_inputField"
+            android:layout_width="200dp"
+            android:layout_height="75dp"
+            android:layout_below="@id/searchBy_assemblyMember_Title"
+            android:layout_marginTop="40dp"
+            android:hint="name" />
+
+        <Button
+            android:id="@+id/button_search_by_vote"
+            android:layout_width="175dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/name_inputField"
+            android:layout_marginTop="10dp"
+            android:text="Rechercher" />
+        </RelativeLayout>
+
+    <TableLayout
+        android:id="@+id/details_vote_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_above="@id/footer"
+        android:layout_marginBottom="150dp">
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+
+        <include layout="@layout/raw_assembly_member2"></include>
+    </TableLayout>
+
+    <include layout="@layout/footer"/>
+
+</RelativeLayout>

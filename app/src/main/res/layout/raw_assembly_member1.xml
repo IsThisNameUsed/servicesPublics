@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:weightSum="15"
+    android:background="@color/raw_grey">
+    <TextView
+        android:id="@+id/column0"
+        android:layout_column="0"
+        android:layout_weight="7"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="Jean Morand" />
+
+    <TextView
+        android:id="@+id/column1"
+        android:layout_column="1"
+        android:layout_weight="7"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="parti Socialiste" />
+
+    <TextView
+        android:id="@+id/column2"
+        android:layout_column="2"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="3dip"
+        android:text="Pour" />
+</TableRow>

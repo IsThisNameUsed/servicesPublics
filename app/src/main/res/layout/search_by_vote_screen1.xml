@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/header"/>
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/search_by_vote_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="recherche par vote"
+            android:textSize="21sp" />
+
+        <Button
+            android:id="@+id/testButton_toDetailsScreen"
+            android:layout_width="90dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/search_by_vote_title"
+            android:text="Test Details" />
+
+        <TableLayout
+            android:id="@+id/vote_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_by_vote_title"
+            android:layout_marginTop="20dp">
+
+            <TableRow android:weightSum="15">
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="12"
+                    android:gravity="center"
+                    android:padding="3dip"
+                    android:text="Vote" />
+
+                <TextView
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="3dip"
+                    android:text="pour" />
+
+                <TextView
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="3dip"
+                    android:text="contre" />
+
+                <TextView
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="3dip"
+                    android:text="abst°" />
+            </TableRow>
+
+            <include
+                android:id="@+id/row1"
+                layout="@layout/raw_vote"></include>
+
+            <include
+                android:id="@+id/row2"
+                layout="@layout/raw_vote"></include>
+
+            <include
+                android:id="@+id/row3"
+                layout="@layout/raw_vote"></include>
+
+            <include
+                android:id="@+id/row4"
+                layout="@layout/raw_vote"></include>
+
+            <include
+                android:id="@+id/row5"
+                layout="@layout/raw_vote"></include>
+
+            <include
+                android:id="@+id/row6"
+                layout="@layout/raw_vote"></include>
+
+            <include
+                android:id="@+id/row7"
+                layout="@layout/raw_vote"></include>
+
+
+        </TableLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/footer"/>
+
+</RelativeLayout>
+
+

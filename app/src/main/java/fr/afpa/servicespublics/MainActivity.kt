@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import fr.afpa.servicespublics.R
-import fr.afpa.servicespublics.ServiceActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +13,11 @@ class MainActivity : AppCompatActivity() {
         val boutonService = findViewById<Button>(R.id.bouton_services)
         boutonService.setOnClickListener {
             startActivity(Intent(this, ServiceActivity::class.java))
+        }
+
+        val boutonAssemble = findViewById<Button>(R.id.bouton_assemblee)
+        boutonAssemble.setOnClickListener {
+            startActivity(Intent(this, NationalAssembly_Menu_Activity::class.java))
         }
     }
 }
