@@ -1,6 +1,7 @@
 package fr.afpa.servicespublics.api
 
 import fr.afpa.servicespublics.metier.CityJsonObject
+import fr.afpa.servicespublics.metier.ServiceJsonObject
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -19,5 +20,15 @@ interface IFindCityApi {
     fun getCityCodeWithPostalCode(@Query("codePostal")codePostal: String): Call<List<CityJsonObject>>
 
     @GET("communes/{codeCommune}/{typeService}")
-    fun getServiceInCity(@Path("codeCommune")codePostal: String, @Path("typeService")typeService: String): Call<List<CityJsonObject>>
+    fun getServiceInCity(@Path("codeCommune")codePostal: String, @Path("typeService")typeService: String): Call<ServiceJsonObject>
+}
+
+interface IFindServiceApi {
+
+    companion object {
+        val ENDPOINT="https://etablissements-publics.api.gouv.fr/v3/"
+    }
+
+    @GET("communes/{codeCommune}/{typeService}")
+    fun getServiceInCity(@Path("codeCommune")codePostal: String, @Path("typeService")typeService: String): Call<ServiceJsonObject>
 }

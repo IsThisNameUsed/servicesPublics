@@ -3,23 +3,42 @@ package fr.afpa.servicespublics
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
-import fr.afpa.servicespublics.api.ClientApi
+import fr.afpa.servicespublics.api.ClientGeoApi
 import fr.afpa.servicespublics.metier.CityJsonObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import fr.afpa.servicespublics.api.ClientServicesApi
+import fr.afpa.servicespublics.metier.ServiceJsonObject
+import android.text.Editable
+import android.widget.AutoCompleteTextView
+import android.text.TextWatcher
+import android.view.View
+import android.widget.*
+import kotlinx.android.synthetic.main.activity_service.*
+
 
 class ServiceActivity : AppCompatActivity() {
 
     //region init
-    var clientAPI = ClientApi()
+    var clientGeoAPI = ClientGeoApi()
+    var clientServiceAPI = ClientServicesApi()
     lateinit var input_cityName : TextView
     lateinit var input_cityCode : TextView
     var typeServicesList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police", "mairie", "prefecture", "sous-pref")
+
+    lateinit var adapterVilles :  ArrayAdapter<String>
+    lateinit var adapterServices :  ArrayAdapter<String>
+    lateinit var adapterEntites :  ArrayAdapter<String>
+
+    /* Récupère les Spinners existants  */
+    lateinit var spinner_villes : Spinner
+    lateinit var spinner_services : Spinner
+    lateinit var spinner_entites : Spinner
+
+    var citiesList: List<CityJsonObject>? = null
+    var citiesCodeList = arrayListOf<String>()
+    var citiesNameList = arrayListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,35 +49,73 @@ class ServiceActivity : AppCompatActivity() {
         val services = resources.getStringArray(R.array.services)
         val entites = resources.getStringArray(R.array.entites)
 
-        /* Créé les ArrayAdapters qui vont servir à voir les données sous forme de Spinner */
-        val adapterVilles = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, villes)
-        val adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, services)
-        val adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entites)
 
-        /* Récupère les Spinners existants et les lie aux ArrayAdapters adéquates */
-        val spinner_villes = findViewById<Spinner>(R.id.spinner_villes)
+        /* Récupère les Spinners existants  */
+        spinner_villes = findViewById<Spinner>(R.id.spinner_villes)
+        spinner_services = findViewById<Spinner>(R.id.spinner_services)
+        spinner_entites = findViewById<Spinner>(R.id.spinner_entites)
+
+        /* Créé les ArrayAdapters qui vont servir à voir les données sous forme de Spinner */
+        adapterVilles = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item)
+        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesList)
+        adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_services.setAdapter(adapterServices)
+        adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entites)
+
+        //lie les spinners aux ArrayAdapters adéquats
         spinner_villes.adapter = adapterVilles
-        val spinner_services = findViewById<Spinner>(R.id.spinner_services)
         spinner_services.adapter = adapterServices
-        val spinner_entites = findViewById<Spinner>(R.id.spinner_entites)
         spinner_entites.adapter = adapterEntites
-        input_cityName = findViewById(R.id.ville_plain_text)
-        input_cityCode = findViewById(R.id.code_postal_plain_text)
+
+        input_cityName = findViewById(R.id.city_inputText)
         val search_button = findViewById<Button>(R.id.bouton_recherche)
         search_button.setOnClickListener {
             launchResearch()
         }
+
+        //Installe un TextWatcher pour obtenire des callbacks dès que le texte est modifier dans le champs de saisie
+        input_cityName.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(input: CharSequence, start: Int, before: Int, count: Int) {
+                GetCitiesListByName(input.toString());
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+
     }
 
     //endregion init
 
+    fun DisplayCitiesPickList(citiesList: List<CityJsonObject>?){
+
+        if(citiesList==null || citiesList.size==0)
+            return
+        citiesNameList.clear()
+        citiesCodeList.clear()
+
+        for(city in citiesList)
+        {
+            citiesNameList.add(city.nom)
+            citiesCodeList.add(city.code)
+        }
+
+        var test: Array<String> = citiesNameList.toTypedArray()
+        val textView = findViewById<View>(R.id.city_inputText) as AutoCompleteTextView
+        ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, test).also { adapter ->
+            textView.setAdapter(adapter)}
+    }
+
     //region appel API's
-    fun getCityCodeWithName(cityName:String): String {
-        var cityCode=""
-        clientAPI.service.getCityCodeWithName(cityName).enqueue(object : Callback<List<CityJsonObject>> {
 
+    fun GetCitiesListByName(input: String){
+        clientGeoAPI.service.getCityCodeWithName(input).enqueue(object : Callback<List<CityJsonObject>> {
             override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
-                val citiesList = response.body()
+                citiesList = response.body()
 
                 if(citiesList == null)
                     Log.d("API", "error, response.body is empty")
@@ -67,40 +124,8 @@ class ServiceActivity : AppCompatActivity() {
                     displayNoCityAvailable()
 
                 citiesList?.let {
-                    chooseCity(citiesList)
+                    DisplayCitiesPickList(citiesList)
                     //debug
-                    displayPostalCode(citiesList[0])
-                    cityCode = citiesList[0].code
-                    Log.d("", "SUCCESS")
-                }
-            }
-            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
-                Log.e("REG", "Error : $t")
-            }
-        })
-
-        return cityCode
-    }
-
-    fun getCityCodeWithPostalCode(postalCode: String) {
-        var cityCode=""
-
-        clientAPI.service.getCityCodeWithPostalCode(postalCode).enqueue(object : Callback<List<CityJsonObject>> {
-            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
-                val citiesList = response.body()
-
-                if(citiesList == null)
-                    Log.d("API", "error, response.body is empty")
-
-                if(citiesList?.size == 0)
-                    displayNoCityAvailable()
-
-                citiesList?.let {
-                    chooseCity(citiesList)
-                    //Debug
-                    displayPostalCode(citiesList[0])
-                    cityCode = citiesList[0].code
-                    displayCityname(citiesList[0])
                     Log.d("", "SUCCESS")
                 }
             }
@@ -110,24 +135,18 @@ class ServiceActivity : AppCompatActivity() {
         })
     }
 
-    fun getServiceDetails(cityName:String, typeService:String) {
+    fun getServiceDetails(cityCode:String, typeService:String) {
         //On accède ici par le choix d'une ville ET d'un type de service dans les spinners appropriés
-        clientAPI.service.getServiceInCity(cityName, typeService).enqueue(object : Callback<List<CityJsonObject>> {
+        ClientServicesApi().service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
 
-            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
-                val citiesList = response.body()
+            override fun onResponse(call: Call<ServiceJsonObject>, response: Response<ServiceJsonObject>) {
+                val servicesList = response.body()
 
-                if(citiesList == null)
-                    Log.d("API", "error, response.body is empty")
-
-                if(citiesList?.size == 0)
-                    displayNoCityAvailable()
-
-                citiesList?.let {
+                servicesList?.let {
                     Log.d("", "SUCCESS")
                 }
             }
-            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
+            override fun onFailure(call: Call<ServiceJsonObject>, t: Throwable) {
                 Log.e("REG", "Error : $t")
             }
         })
@@ -136,20 +155,37 @@ class ServiceActivity : AppCompatActivity() {
     //endregion
 
     //region select city and service
+
+    fun selectCity(cityCode: String, citiesList: List<CityJsonObject>?){
+
+    }
+
     fun launchResearch() {
-        var cityCode: String
-        val postalCode = input_cityCode.text.toString()
         val cityName = input_cityName.text.toString()
-        val codeValid = checkCityCodeValidity(postalCode)
-        if(codeValid)
-            getCityCodeWithPostalCode(postalCode)
-        else if(cityName.isNotEmpty()){
-            cityCode = getCityCodeWithName(cityName)
+        if(cityName.isNotEmpty()){
+            var cityCode = getCityCodeByName()
+            if(cityCode=="") {
+                //Afficher: la ville n'existe pas
+            }
+            else {
+                spinner_services.visibility=View.VISIBLE
+            }
         }
     }
 
+    fun getCityCodeByName(): String {
+        var cityNameInput = city_inputText.text.toString()
+        var cityCode: String = ""
+        for(i in 0..citiesNameList.size-1)
+        {
+            if(citiesNameList[i].equals(cityNameInput))
+                cityCode=citiesCodeList[i]
+        }
+        return cityCode
+    }
+
     //On verifie si le code est de la bonne longueur et est composé de caractères numériques
-    fun checkCityCodeValidity(code: String):Boolean {
+    fun checkCityPostalCodeValidity(code: String):Boolean {
         if(code.length!=5)
             return false
 
@@ -161,15 +197,6 @@ class ServiceActivity : AppCompatActivity() {
         return true
     }
 
-    fun chooseCity(citiesList: List<CityJsonObject>){
-
-        if(citiesList.size == 1) {
-            //Afficher le spinner du choix de services dans cette ville
-        }
-        else{
-            //Afficher le spinner du choix de ville
-        }
-    }
     //endregion select city and service
 
     //region displaying
@@ -186,12 +213,12 @@ class ServiceActivity : AppCompatActivity() {
     //endregion displaying
 
     //region TEST et DEBUG
-    fun displayPostalCode(jsonObject: CityJsonObject){
-        input_cityCode.text = jsonObject.code
+    fun displayPostalCode(jsonObject: CityJsonObject?){
+        input_cityCode.text = jsonObject?.code
     }
 
     fun displayCityname(jsonObject: CityJsonObject){
-        input_cityName.text = jsonObject.nom
+        input_cityName.text = jsonObject?.nom
     }
 
     //endregion TEST et DEBUG

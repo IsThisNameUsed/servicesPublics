@@ -83,76 +83,50 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_recherche">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                <AutoCompleteTextView
+                    android:id="@+id/city_inputText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="12"
+                    android:textAlignment="center"
+                    android:hint="Ville"
+                    android:minHeight="48dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#000000"
+                    android:textSize="15sp" />
 
-                    <EditText
-                        android:id="@+id/ville_plain_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="#000000"
-                        android:ems="8"
-                        android:hint="Ville"
-                        android:inputType="textPersonName"
-                        android:minHeight="48dp"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textColorHint="#000000"
-                        android:textSize="15sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <EditText
+                    android:id="@+id/code_postal_plain_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_weight="4"
+                    android:backgroundTint="#000000"
+                    android:hint="Code"
+                    android:inputType="textPersonName"
+                    android:minHeight="48dp"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textColorHint="#000000"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <EditText
-                        android:id="@+id/code_postal_plain_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="#000000"
-                        android:ems="6"
-                        android:hint="Code"
-                        android:inputType="textPersonName"
-                        android:minHeight="48dp"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textColorHint="#000000"
-                        android:textSize="15sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/ville_plain_text"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Button
-                        android:id="@+id/bouton_recherche"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="48dp"
-                        android:backgroundTint="#606C6262"
-                        android:ems="7"
-                        android:text="Rechercher"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="#000000"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/code_postal_plain_text"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
+                <Button
+                    android:id="@+id/bouton_recherche"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="15dp"
+                    android:minHeight="48dp"
+                    android:backgroundTint="#606C6262"
+                    android:text="Rechercher"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#000000"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/code_postal_plain_text"
+                    app:layout_constraintTop_toTopOf="parent" />
             </LinearLayout>
-
-            <Spinner
-                android:id="@+id/spinner_villes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:minHeight="48dp"
-                android:visibility="invisible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout_manuel"
-                tools:visibility="invisible" />
-
             <View
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
@@ -164,6 +138,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layout_manuel" />
+            <Spinner
+                android:id="@+id/spinner_villes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:dropDownHeight="60dp"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_manuel"
+                tools:text="Selectionnez une ville" />
 
             <LinearLayout
                 android:id="@+id/layout_localiser"
@@ -190,6 +174,7 @@
                             android:layout_height="match_parent">
 
                             <RadioButton
+                                android:visibility="invisible"
                                 android:id="@+id/bouton_gps"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -199,6 +184,7 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
+                                android:visibility="invisible"
                                 android:id="@+id/bouton_reseau"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -212,6 +198,7 @@
                     </RadioGroup>
 
                     <Button
+                        android:visibility="invisible"
                         android:id="@+id/bouton_localiser"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -256,7 +243,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="10dp"
         android:minHeight="48dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/label_ville_code"
         tools:ignore="SpeakableTextPresentCheck"
