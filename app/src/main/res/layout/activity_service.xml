@@ -174,7 +174,6 @@
                             android:layout_height="match_parent">
 
                             <RadioButton
-                                android:visibility="invisible"
                                 android:id="@+id/bouton_gps"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -184,7 +183,6 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:visibility="invisible"
                                 android:id="@+id/bouton_reseau"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -198,7 +196,6 @@
                     </RadioGroup>
 
                     <Button
-                        android:visibility="invisible"
                         android:id="@+id/bouton_localiser"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -257,11 +254,9 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="10dp"
         android:minHeight="48dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_services"
-        tools:ignore="SpeakableTextPresentCheck"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_services" />
 
     <LinearLayout
         android:id="@+id/layout_entite"
@@ -271,16 +266,16 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner_entites"
         tools:visibility="visible">
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/image_entite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars" /> -->
 
         <ScrollView
             android:id="@+id/scroll_view_info"
@@ -296,7 +291,7 @@
                 <TextView
                     android:id="@+id/info_entite"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:text="Adresse..." />
@@ -325,7 +320,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/label_actions"

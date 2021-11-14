@@ -25,6 +25,7 @@ class ServiceActivity : AppCompatActivity() {
     var clientServiceAPI = ClientServicesApi()
     lateinit var input_cityName : TextView
     lateinit var input_cityCode : TextView
+    lateinit var selectedCity : TextView
     var typeServicesList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police", "mairie", "prefecture", "sous-pref")
 
     lateinit var adapterVilles :  ArrayAdapter<String>
@@ -39,6 +40,8 @@ class ServiceActivity : AppCompatActivity() {
     var citiesList: List<CityJsonObject>? = null
     var citiesCodeList = arrayListOf<String>()
     var citiesNameList = arrayListOf<String>()
+
+    var selectedCity_code: String =""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,16 +67,18 @@ class ServiceActivity : AppCompatActivity() {
 
         //lie les spinners aux ArrayAdapters adéquats
         spinner_villes.adapter = adapterVilles
-        spinner_services.adapter = adapterServices
+        //spinner_services.adapter = adapterServices
         spinner_entites.adapter = adapterEntites
 
-        input_cityName = findViewById(R.id.city_inputText)
+        selectedCity = findViewById(R.id.label_ville_code)
+
+        input_cityName = findViewById<View>(R.id.city_inputText) as AutoCompleteTextView
         val search_button = findViewById<Button>(R.id.bouton_recherche)
         search_button.setOnClickListener {
             launchResearch()
         }
 
-        //Installe un TextWatcher pour obtenire des callbacks dès que le texte est modifier dans le champs de saisie
+        //Installe un TextWatcher pour obtenir des callbacks dès que le texte est modifié dans le champs de saisie
         input_cityName.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(input: CharSequence, start: Int, before: Int, count: Int) {
                 GetCitiesListByName(input.toString());
@@ -87,28 +92,36 @@ class ServiceActivity : AppCompatActivity() {
             }
         })
 
+        //Détection d'un clique sur la liste de proposition de ville
+        city_inputText.setOnItemClickListener{ parent, position, view, id ->
+            Log.d("DebugLog", "CLICK")
+            selectCity()
+        }
+
     }
 
     //endregion init
 
-    fun DisplayCitiesPickList(citiesList: List<CityJsonObject>?){
+    fun DisplayCitiesPickList(citiesList: List<CityJsonObject>?) {
 
-        if(citiesList==null || citiesList.size==0)
+        if (citiesList == null || citiesList.size == 0)
             return
         citiesNameList.clear()
         citiesCodeList.clear()
 
-        for(city in citiesList)
-        {
+        for (city in citiesList) {
             citiesNameList.add(city.nom)
             citiesCodeList.add(city.code)
         }
 
         var test: Array<String> = citiesNameList.toTypedArray()
-        val textView = findViewById<View>(R.id.city_inputText) as AutoCompleteTextView
+
         ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, test).also { adapter ->
-            textView.setAdapter(adapter)}
+            city_inputText.setAdapter(adapter)
+        }
     }
+
+
 
     //region appel API's
 
@@ -144,6 +157,12 @@ class ServiceActivity : AppCompatActivity() {
 
                 servicesList?.let {
                     Log.d("", "SUCCESS")
+
+                    var infoTextView = findViewById<TextView>(R.id.info_entite)
+                    var adresse = servicesList.features[0].properties.adresses[0]
+                    infoTextView.text = adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune
+                    var layout_entite = findViewById<TextView>(R.id.info_entite)
+                    layout_entite.visibility = View.VISIBLE
                 }
             }
             override fun onFailure(call: Call<ServiceJsonObject>, t: Throwable) {
@@ -156,8 +175,8 @@ class ServiceActivity : AppCompatActivity() {
 
     //region select city and service
 
-    fun selectCity(cityCode: String, citiesList: List<CityJsonObject>?){
-
+    fun selectCity(){
+        selectedCity_code = getCityCodeByName()
     }
 
     fun launchResearch() {
@@ -168,7 +187,7 @@ class ServiceActivity : AppCompatActivity() {
                 //Afficher: la ville n'existe pas
             }
             else {
-                spinner_services.visibility=View.VISIBLE
+                getServiceDetails(cityCode, spinner_services.selectedItem.toString())
             }
         }
     }
@@ -181,6 +200,8 @@ class ServiceActivity : AppCompatActivity() {
             if(citiesNameList[i].equals(cityNameInput))
                 cityCode=citiesCodeList[i]
         }
+        selectedCity.text = cityNameInput +" "+ cityCode
+        selectedCity.visibility = View.VISIBLE
         return cityCode
     }
 
