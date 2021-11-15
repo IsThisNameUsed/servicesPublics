@@ -248,9 +248,13 @@ class ServiceActivity : AppCompatActivity() {
         var infoTextView = findViewById<TextView>(R.id.info_entite)
         var adresse = service.properties.adresses[0]
         var nom = service.properties.nom
-        infoTextView.text = adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune
+        var url = service.properties.url
+        val phone = service.properties.telephone
 
-        scroll_view_info.visibility = View.VISIBLE    }
+        infoTextView.text = nom + "\n"+ adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune + "\n"+ "site web: " + url + "\n"+ "téléphone: " + phone + "\n"
+
+        scroll_view_info.visibility = View.VISIBLE
+    }
 
     fun displayNoCityAvailable()
     {
