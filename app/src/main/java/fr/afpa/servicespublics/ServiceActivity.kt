@@ -11,10 +11,12 @@ import retrofit2.Response
 import fr.afpa.servicespublics.api.ClientServicesApi
 import fr.afpa.servicespublics.metier.ServiceJsonObject
 import android.text.Editable
+import android.text.Layout
 import android.widget.AutoCompleteTextView
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
+import fr.afpa.servicespublics.metier.Service
 import kotlinx.android.synthetic.main.activity_service.*
 
 
@@ -26,6 +28,9 @@ class ServiceActivity : AppCompatActivity() {
     lateinit var input_cityName : TextView
     lateinit var input_cityCode : TextView
     lateinit var selectedCity : TextView
+    lateinit var service_details : TextView
+    lateinit var scroll_view_info : ScrollView
+
     var typeServicesList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police", "mairie", "prefecture", "sous-pref")
 
     lateinit var adapterVilles :  ArrayAdapter<String>
@@ -60,10 +65,10 @@ class ServiceActivity : AppCompatActivity() {
 
         /* Créé les ArrayAdapters qui vont servir à voir les données sous forme de Spinner */
         adapterVilles = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item)
+        adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item)
         adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesList)
         adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_services.setAdapter(adapterServices)
-        adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entites)
 
         //lie les spinners aux ArrayAdapters adéquats
         spinner_villes.adapter = adapterVilles
@@ -71,8 +76,10 @@ class ServiceActivity : AppCompatActivity() {
         spinner_entites.adapter = adapterEntites
 
         selectedCity = findViewById(R.id.label_ville_code)
-
+        service_details = findViewById<TextView>(R.id.info_entite)
         input_cityName = findViewById<View>(R.id.city_inputText) as AutoCompleteTextView
+        scroll_view_info = findViewById(R.id.scroll_view_info)
+
         val search_button = findViewById<Button>(R.id.bouton_recherche)
         search_button.setOnClickListener {
             launchResearch()
@@ -157,12 +164,18 @@ class ServiceActivity : AppCompatActivity() {
 
                 servicesList?.let {
                     Log.d("", "SUCCESS")
+                    if(servicesList.features.size==0) {
+                        //TODO afficher pas de services de ce type
+                    }
+                    else if(servicesList.features.size==1) {
+                        //TODO afficher les détails du service
+                        displayServiceDetails(servicesList.features[0])
+                    }
+                    else{
+                        //TODO afficher les différents services dans le spinner entite
+                        fillEntitiesSpinner(servicesList)
 
-                    var infoTextView = findViewById<TextView>(R.id.info_entite)
-                    var adresse = servicesList.features[0].properties.adresses[0]
-                    infoTextView.text = adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune
-                    var layout_entite = findViewById<TextView>(R.id.info_entite)
-                    layout_entite.visibility = View.VISIBLE
+                    }
                 }
             }
             override fun onFailure(call: Call<ServiceJsonObject>, t: Throwable) {
@@ -174,9 +187,18 @@ class ServiceActivity : AppCompatActivity() {
     //endregion
 
     //region select city and service
-
     fun selectCity(){
         selectedCity_code = getCityCodeByName()
+    }
+
+    fun fillEntitiesSpinner(serviceList: ServiceJsonObject){
+        var entitiesList = arrayListOf<String>()
+        for(service in serviceList.features){
+            entitiesList.add(service.properties.nom)
+        }
+        adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entitiesList)
+        adapterEntites.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_entites.setAdapter(adapterEntites)
     }
 
     fun launchResearch() {
@@ -221,10 +243,14 @@ class ServiceActivity : AppCompatActivity() {
     //endregion select city and service
 
     //region displaying
-    fun displayServiceDetails()
+    fun displayServiceDetails(service: Service)
     {
+        var infoTextView = findViewById<TextView>(R.id.info_entite)
+        var adresse = service.properties.adresses[0]
+        var nom = service.properties.nom
+        infoTextView.text = adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune
 
-    }
+        scroll_view_info.visibility = View.VISIBLE    }
 
     fun displayNoCityAvailable()
     {
