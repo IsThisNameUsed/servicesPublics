@@ -15,9 +15,7 @@ import android.text.Editable
 import android.widget.AutoCompleteTextView
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.core.view.get
 import fr.afpa.servicespublics.metier.Service
 import kotlinx.android.synthetic.main.activity_service.*
 
@@ -48,6 +46,7 @@ class ServiceActivity : AppCompatActivity() {
     var citiesNameList = arrayListOf<String>()
 
     var selectedCity_code: String =""
+    var servicesList : ServiceJsonObject? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,14 +90,27 @@ class ServiceActivity : AppCompatActivity() {
             launchResearch()
         }
 
-        spinner_services.setOnItemClickListener { adapterView, view, i, l ->
-            getServiceDetails(selectedCity_code, spinner_services.get(i).toString())
+        spinner_services.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                getServiceDetails(selectedCity_code, spinner_services.selectedItem.toString())
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
-/*
-        spinner_entites.setOnItemClickListener { adapterView, view, i, l ->
-            displayServiceDetails(services)
+
+        /* TODO A finir si possible Pierre, bug subsistant
+         * servicesList!!.features[spinner_entites.selectedItemPosition] cette ligne n'est pas safe, ça ne récupère pas à 100% le bon service
+         * j'ai passé servicesList en variable plutôt qu'en constante
+         * il est 4h33, je suis au bout de ma vie, je te laisse t'en charger
+         * Très peu de chance que je sois là pour la classe virtuelle
+         */
+        spinner_entites.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                displayServiceDetails(servicesList!!.features[spinner_entites.selectedItemPosition])
+                adapterEntites.notifyDataSetChanged()
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
- */   }
+    }
 
     //endregion init
 
@@ -152,21 +164,20 @@ class ServiceActivity : AppCompatActivity() {
         ClientServicesApi().service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
 
             override fun onResponse(call: Call<ServiceJsonObject>, response: Response<ServiceJsonObject>) {
-                val servicesList = response.body()
+                servicesList = response.body()
 
                 servicesList?.let {
                     Log.d("", "SUCCESS")
-                    if(servicesList.features.size==0) {
+                    if(servicesList!!.features.size==0) {
                         //TODO afficher pas de services de ce type
                     }
-                    else if(servicesList.features.size==1) {
+                    else if(servicesList!!.features.size==1) {
                         //TODO afficher les détails du service
-                        displayServiceDetails(servicesList.features[0])
+                        displayServiceDetails(servicesList!!.features[0])
                     }
                     else{
                         //TODO afficher les différents services dans le spinner entite
-                        fillEntitiesSpinner(servicesList)
-
+                        fillEntitiesSpinner(servicesList!!)
                     }
                 }
             }
@@ -246,7 +257,7 @@ class ServiceActivity : AppCompatActivity() {
 
         infoTextView.text = nom + "\n"+ adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune + "\n"+ "site web: " + url + "\n"+ "téléphone: " + phone + "\n"
 
-        scroll_view_info.visibility = View.VISIBLE
+        findViewById<View>(R.id.layout_entite).visibility = View.VISIBLE
     }
 
     fun displayNoCityAvailable()
