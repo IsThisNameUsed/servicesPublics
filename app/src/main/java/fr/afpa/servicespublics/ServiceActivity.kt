@@ -1,5 +1,6 @@
 package fr.afpa.servicespublics
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +12,12 @@ import retrofit2.Response
 import fr.afpa.servicespublics.api.ClientServicesApi
 import fr.afpa.servicespublics.metier.ServiceJsonObject
 import android.text.Editable
-import android.text.Layout
 import android.widget.AutoCompleteTextView
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.core.view.get
 import fr.afpa.servicespublics.metier.Service
 import kotlinx.android.synthetic.main.activity_service.*
 
@@ -25,7 +27,7 @@ class ServiceActivity : AppCompatActivity() {
     //region init
     var clientGeoAPI = ClientGeoApi()
     var clientServiceAPI = ClientServicesApi()
-    lateinit var input_cityName : TextView
+    lateinit var input_cityName : AutoCompleteTextView
     lateinit var input_cityCode : TextView
     lateinit var selectedCity : TextView
     lateinit var service_details : TextView
@@ -33,12 +35,11 @@ class ServiceActivity : AppCompatActivity() {
 
     var typeServicesList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police", "mairie", "prefecture", "sous-pref")
 
-    lateinit var adapterVilles :  ArrayAdapter<String>
     lateinit var adapterServices :  ArrayAdapter<String>
     lateinit var adapterEntites :  ArrayAdapter<String>
+    lateinit var arrayAdapterCity : ArrayAdapter<String>
 
     /* Récupère les Spinners existants  */
-    lateinit var spinner_villes : Spinner
     lateinit var spinner_services : Spinner
     lateinit var spinner_entites : Spinner
 
@@ -52,37 +53,27 @@ class ServiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service)
 
-        /* Récupère les données des villes et services par le biais du fichier xml */
-        val villes = resources.getStringArray(R.array.villes)
-        val services = resources.getStringArray(R.array.services)
-        val entites = resources.getStringArray(R.array.entites)
-
-
         /* Récupère les Spinners existants  */
-        spinner_villes = findViewById<Spinner>(R.id.spinner_villes)
         spinner_services = findViewById<Spinner>(R.id.spinner_services)
         spinner_entites = findViewById<Spinner>(R.id.spinner_entites)
 
         /* Créé les ArrayAdapters qui vont servir à voir les données sous forme de Spinner */
-        adapterVilles = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item)
         adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item)
         adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesList)
         adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_services.setAdapter(adapterServices)
 
-        //lie les spinners aux ArrayAdapters adéquats
-        spinner_villes.adapter = adapterVilles
         //spinner_services.adapter = adapterServices
         spinner_entites.adapter = adapterEntites
 
         selectedCity = findViewById(R.id.label_ville_code)
-        service_details = findViewById<TextView>(R.id.info_entite)
-        input_cityName = findViewById<View>(R.id.city_inputText) as AutoCompleteTextView
+        service_details = findViewById(R.id.info_entite)
+        input_cityName = findViewById(R.id.city_inputText)
+        input_cityName.threshold = 1
         scroll_view_info = findViewById(R.id.scroll_view_info)
 
-        val search_button = findViewById<Button>(R.id.bouton_recherche)
-        search_button.setOnClickListener {
-            launchResearch()
+        input_cityName.setOnClickListener {
+            GetCitiesListByName(input_cityName.text.toString())
         }
 
         //Installe un TextWatcher pour obtenir des callbacks dès que le texte est modifié dans le champs de saisie
@@ -90,22 +81,24 @@ class ServiceActivity : AppCompatActivity() {
             override fun onTextChanged(input: CharSequence, start: Int, before: Int, count: Int) {
                 GetCitiesListByName(input.toString());
             }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable) {
-
-            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable) {}
         })
 
         //Détection d'un clique sur la liste de proposition de ville
-        city_inputText.setOnItemClickListener{ parent, position, view, id ->
-            Log.d("DebugLog", "CLICK")
+        input_cityName.setOnItemClickListener{ parent, position, view, id ->
             selectCity()
+            launchResearch()
         }
 
-    }
+        spinner_services.setOnItemClickListener { adapterView, view, i, l ->
+            getServiceDetails(selectedCity_code, spinner_services.get(i).toString())
+        }
+/*
+        spinner_entites.setOnItemClickListener { adapterView, view, i, l ->
+            displayServiceDetails(services)
+        }
+ */   }
 
     //endregion init
 
@@ -121,11 +114,10 @@ class ServiceActivity : AppCompatActivity() {
             citiesCodeList.add(city.code)
         }
 
-        var test: Array<String> = citiesNameList.toTypedArray()
-
-        ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, test).also { adapter ->
-            city_inputText.setAdapter(adapter)
-        }
+        /* Créer un ArrayAdapter avec la liste des villes, ajoute l'adapter créé à l'input d'affichage de la ville et notifie des changements de données */
+        arrayAdapterCity = ArrayAdapter(this, android.R.layout.simple_list_item_1, citiesNameList.toTypedArray())
+        input_cityName.setAdapter(arrayAdapterCity)
+        arrayAdapterCity.notifyDataSetChanged()
     }
 
 
@@ -139,14 +131,14 @@ class ServiceActivity : AppCompatActivity() {
 
                 if(citiesList == null)
                     Log.d("API", "error, response.body is empty")
-
-                if(citiesList?.size == 0)
+                else if(citiesList?.size == 0)
                     displayNoCityAvailable()
-
-                citiesList?.let {
-                    DisplayCitiesPickList(citiesList)
-                    //debug
-                    Log.d("", "SUCCESS")
+                else {
+                    citiesList?.let {
+                        DisplayCitiesPickList(citiesList)
+                        //debug
+                        Log.d("", "SUCCESS")
+                    }
                 }
             }
             override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
@@ -199,6 +191,7 @@ class ServiceActivity : AppCompatActivity() {
         adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entitiesList)
         adapterEntites.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_entites.setAdapter(adapterEntites)
+        adapterEntites.notifyDataSetChanged()
     }
 
     fun launchResearch() {
@@ -269,7 +262,7 @@ class ServiceActivity : AppCompatActivity() {
     }
 
     fun displayCityname(jsonObject: CityJsonObject){
-        input_cityName.text = jsonObject?.nom
+        //input_cityName.text = jsonObject?.nom
     }
 
     //endregion TEST et DEBUG
