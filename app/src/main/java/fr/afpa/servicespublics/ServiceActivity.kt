@@ -173,7 +173,7 @@ class ServiceActivity : AppCompatActivity() {
 
     fun getServiceDetails(cityCode:String, typeService:String) {
         cleanServiceDetails()
-        ClientServicesApi().service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
+        clientServiceAPI .service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
             override fun onResponse(call: Call<ServiceJsonObject>, response: Response<ServiceJsonObject>) {
                 servicesList = response.body()
 

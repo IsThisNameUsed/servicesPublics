@@ -47,6 +47,12 @@
             android:layout_below="@id/name_inputField"
             android:layout_marginTop="10dp"
             android:text="Rechercher" />
+
+        <TextView
+            android:id="@+id/testText"
+            android:layout_width="400dp"
+            android:layout_height="52dp"
+            android:layout_below="@id/button_search_by_vote"/>
         </RelativeLayout>
 
     <TableLayout
@@ -55,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_above="@id/footer"
-        android:layout_marginBottom="150dp">
+        android:layout_marginBottom="50dp">
 
         <include layout="@layout/raw_assembly_member2"></include>
 

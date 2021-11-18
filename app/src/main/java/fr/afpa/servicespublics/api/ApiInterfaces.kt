@@ -1,5 +1,6 @@
 package fr.afpa.servicespublics.api
 
+import fr.afpa.servicespublics.metier.AssemblyJsonObject
 import fr.afpa.servicespublics.metier.CityJsonObject
 import fr.afpa.servicespublics.metier.ServiceJsonObject
 import retrofit2.Call
@@ -31,4 +32,14 @@ interface IFindServiceApi {
 
     @GET("communes/{codeCommune}/{typeService}")
     fun getServiceInCity(@Path("codeCommune")codePostal: String, @Path("typeService")typeService: String): Call<ServiceJsonObject>
+}
+
+interface IAssembleApi {
+
+    companion object {
+        val ENDPOINT="https://www.nosdeputes.fr/"
+    }
+
+    @GET("deputes/enmandat/json?textplain=true")
+    fun getDeputyList(): Call<AssemblyJsonObject>
 }
