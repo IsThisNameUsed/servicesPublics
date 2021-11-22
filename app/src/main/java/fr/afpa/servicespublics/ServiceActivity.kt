@@ -31,7 +31,8 @@ class ServiceActivity : AppCompatActivity() {
     lateinit var scrollViewInfo : ScrollView
 
     var typeServicesList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police", "mairie", "prefecture", "sous-pref")
-
+    var typeServicesParisList = listOf("apec", "pole_emploi", "gendarmerie", "commissariat_police",
+        "paris_mairie", "paris_mairie_arrondissement", "paris_ppp", "prefecture", "sous-pref")
     lateinit var adapterServices :  ArrayAdapter<String>
     lateinit var adapterEntites :  ArrayAdapter<String>
     lateinit var arrayAdapterCity : ArrayAdapter<String>
@@ -47,6 +48,17 @@ class ServiceActivity : AppCompatActivity() {
     var selectedCityCode: String = ""
     var servicesList : ServiceJsonObject? = null
 
+    fun SetAdapterServicesToParis(){
+        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesParisList)
+        adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_services.setAdapter(adapterServices)
+    }
+
+    fun SetAdapterSericesToDefault(){
+        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesList)
+        adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_services.setAdapter(adapterServices)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service)
@@ -153,7 +165,8 @@ class ServiceActivity : AppCompatActivity() {
 
     fun getServiceDetails(cityCode:String, typeService:String) {
         //On accède ici par le choix d'une ville ET d'un type de service dans les spinners appropriés
-        ClientServicesApi().service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
+        cleanServiceDetails()
+        clientServiceAPI .service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
             override fun onResponse(call: Call<ServiceJsonObject>, response: Response<ServiceJsonObject>) {
                 servicesList = response.body()
                 servicesList?.let {
@@ -162,7 +175,7 @@ class ServiceActivity : AppCompatActivity() {
                         //TODO afficher pas de services de ce type
                     }
                     else if (servicesList!!.features.size == 1) {
-                        //TODO afficher les détails du service
+                        cleanEntitiesSpinner()
                         displayServiceDetails(servicesList!!.features[0])
                     }
                     else{
@@ -181,26 +194,36 @@ class ServiceActivity : AppCompatActivity() {
     //endregion
 
     //region select city and service
-    fun selectCity(){
+    fun selectCity() {
         selectedCityCode = getCityCodeByName()
+        if(selectedCityCode=="75056")
+            SetAdapterServicesToParis()
+        else
+            SetAdapterSericesToDefault()
     }
 
-    fun fillEntitiesSpinner(serviceList: ServiceJsonObject){
+    fun fillEntitiesSpinner(serviceList: ServiceJsonObject) {
         var entitiesList = arrayListOf<String>()
-        for(service in serviceList.features){
+        for (service in serviceList.features) {
             entitiesList.add(service.properties.nom)
         }
         adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entitiesList)
         adapterEntites.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerEntites.setAdapter(adapterEntites)
         adapterEntites.notifyDataSetChanged()
+        spinner_entites.visibility = View.VISIBLE
+    }
+
+    fun cleanEntitiesSpinner() {
+        adapterEntites.clear()
+        spinner_entites.visibility = View.INVISIBLE
     }
 
     fun launchResearch() {
         val cityName = inputCityName.text.toString()
-        if(cityName.isNotEmpty()){
+        if (cityName.isNotEmpty()) {
             var cityCode = getCityCodeByName()
-            if(cityCode=="") {
+            if (cityCode=="") {
                 //Afficher: la ville n'existe pas
             }
             else {
@@ -249,6 +272,11 @@ class ServiceActivity : AppCompatActivity() {
         infoTextView.text = nom + "\n"+ adresse.lignes[0] +" " + adresse.codePostal + " " + adresse.commune + "\n"+ "site web: " + url + "\n"+ "téléphone: " + phone + "\n"
 
         findViewById<View>(R.id.layout_entite).visibility = View.VISIBLE
+    }
+
+    fun cleanServiceDetails(){
+        var infoTextView = findViewById<TextView>(R.id.info_entite)
+        infoTextView.text = ""
     }
 
     fun displayNoCityAvailable()
