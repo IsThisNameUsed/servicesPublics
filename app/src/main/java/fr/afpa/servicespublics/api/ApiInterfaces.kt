@@ -1,8 +1,6 @@
 package fr.afpa.servicespublics.api
 
-import fr.afpa.servicespublics.metier.AssemblyJsonObject
-import fr.afpa.servicespublics.metier.CityJsonObject
-import fr.afpa.servicespublics.metier.ServiceJsonObject
+import fr.afpa.servicespublics.metier.*
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -41,5 +39,12 @@ interface IAssembleApi {
     }
 
     @GET("deputes/enmandat/json?textplain=true")
-    fun getDeputyList(): Call<AssemblyJsonObject>
+    fun getDeputyList(): Call<assemblyDeputiesListJson>
+
+    @GET("{name}/votes/json?textplain=true")
+    fun getDeputyVoteList(@Path("name")name: String): Call<deputyVoteList>
+
+    @GET("{name}/json?textplain=true")
+    fun getDeputyDetails(@Path("name")name: String): Call<deputyDetailsContainer>
+
 }

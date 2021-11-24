@@ -33,8 +33,6 @@ class SearchByVote_Screen1_Activity:AppCompatActivity() {
         //Get information about ten last votes et fill table rows with them (more votes? paging?)
         var tableLayout = findViewById<TableLayout>(R.id.vote_table)
         val li = LayoutInflater.from(applicationContext)
-        val row = li.inflate(R.layout.raw_vote, null)
-
         for(i in 0..10){
             val row = li.inflate(R.layout.raw_vote, null)
             row.findViewById<Button>(R.id.column0).text = "nom vote"
