@@ -25,7 +25,6 @@ class ServiceActivity : AppCompatActivity() {
     var clientGeoAPI = ClientGeoApi()
     var clientServiceAPI = ClientServicesApi()
     lateinit var inputCityName : AutoCompleteTextView
-    lateinit var inputCityCode : TextView
     lateinit var selectedCity : TextView
     lateinit var serviceDetails : TextView
     lateinit var scrollViewInfo : ScrollView
@@ -48,17 +47,16 @@ class ServiceActivity : AppCompatActivity() {
     var selectedCityCode: String = ""
     var servicesList : ServiceJsonObject? = null
 
-    fun SetAdapterServicesToParis(){
-        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesParisList)
-        adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner_services.setAdapter(adapterServices)
+    fun setAdapterServicesToParis(){
+        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, typeServicesParisList)
+        spinner_services.adapter = adapterServices
     }
 
-    fun SetAdapterSericesToDefault(){
-        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesList)
-        adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner_services.setAdapter(adapterServices)
+    fun setAdapterServicesToDefault(){
+        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, typeServicesList)
+        spinner_services.adapter = adapterServices
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service)
@@ -69,9 +67,8 @@ class ServiceActivity : AppCompatActivity() {
 
         /* Créé les ArrayAdapters qui vont servir à voir les données sous forme de Spinner */
         adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item)
-        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeServicesList)
-        adapterServices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerServices.setAdapter(adapterServices)
+        adapterServices = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, typeServicesList)
+        spinnerServices.adapter = adapterServices
 
         //spinner_services.adapter = adapterServices
         spinnerEntites.adapter = adapterEntites
@@ -83,13 +80,19 @@ class ServiceActivity : AppCompatActivity() {
         scrollViewInfo = findViewById(R.id.scroll_view_info)
 
         inputCityName.setOnClickListener {
-            GetCitiesListByName(inputCityName.text.toString())
+            if (inputCityName.text.isNotEmpty() && inputCityName.text.matches("[0-9]{5}".toRegex()))
+                getCitiesListByCode(inputCityName.text.toString())
+            else if (inputCityName.text.isNotEmpty())
+                getCitiesListByName(inputCityName.text.toString())
         }
 
         //Installe un TextWatcher pour obtenir des callbacks dès que le texte est modifié dans le champs de saisie
         inputCityName.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(input: CharSequence, start: Int, before: Int, count: Int) {
-                GetCitiesListByName(input.toString());
+                if (input.isNotEmpty() && input.matches("[0-9]{5}".toRegex()))
+                    getCitiesListByCode(input.toString())
+                else if (input.isNotEmpty())
+                    getCitiesListByName(input.toString())
             }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable) {}
@@ -108,8 +111,6 @@ class ServiceActivity : AppCompatActivity() {
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
 
-        /* TODO bug subsistant
-         */
         spinnerEntites.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 displayServiceDetails(servicesList!!.features[spinnerEntites.selectedItemPosition])
@@ -121,7 +122,7 @@ class ServiceActivity : AppCompatActivity() {
 
     //endregion init
 
-    fun DisplayCitiesPickList(citiesList: List<CityJsonObject>?) {
+    fun displayCitiesPickList(citiesList: List<CityJsonObject>?) {
         if (citiesList != null && citiesList.isNotEmpty()) {
             citiesNameList.clear()
             citiesCodeList.clear()
@@ -140,7 +141,7 @@ class ServiceActivity : AppCompatActivity() {
 
     //region appel API's
 
-    fun GetCitiesListByName(input: String){
+    fun getCitiesListByName(input: String){
         clientGeoAPI.service.getCityCodeWithName(input).enqueue(object : Callback<List<CityJsonObject>> {
             override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
                 citiesList = response.body()
@@ -151,7 +152,30 @@ class ServiceActivity : AppCompatActivity() {
                     displayNoCityAvailable()
                 else {
                     citiesList?.let {
-                        DisplayCitiesPickList(citiesList)
+                        displayCitiesPickList(citiesList)
+                        //debug
+                        Log.d("", "SUCCESS")
+                    }
+                }
+            }
+            override fun onFailure(call: Call<List<CityJsonObject>>, t: Throwable) {
+                Log.e("REG", "Error : $t")
+            }
+        })
+    }
+
+    fun getCitiesListByCode(input: String){
+        clientGeoAPI.service.getCityCodeWithPostalCode(input).enqueue(object : Callback<List<CityJsonObject>> {
+            override fun onResponse(call: Call<List<CityJsonObject>>, response: Response<List<CityJsonObject>>) {
+                citiesList = response.body()
+
+                if(citiesList == null)
+                    Log.d("API", "error, response.body is empty")
+                else if(citiesList?.size == 0)
+                    displayNoCityAvailable()
+                else {
+                    citiesList?.let {
+                        displayCitiesPickList(citiesList)
                         //debug
                         Log.d("", "SUCCESS")
                     }
@@ -166,7 +190,7 @@ class ServiceActivity : AppCompatActivity() {
     fun getServiceDetails(cityCode:String, typeService:String) {
         //On accède ici par le choix d'une ville ET d'un type de service dans les spinners appropriés
         cleanServiceDetails()
-        clientServiceAPI .service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
+        clientServiceAPI.service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
             override fun onResponse(call: Call<ServiceJsonObject>, response: Response<ServiceJsonObject>) {
                 servicesList = response.body()
                 servicesList?.let {
@@ -196,20 +220,18 @@ class ServiceActivity : AppCompatActivity() {
     //region select city and service
     fun selectCity() {
         selectedCityCode = getCityCodeByName()
-        if(selectedCityCode=="75056")
-            SetAdapterServicesToParis()
+        if (selectedCityCode == "75056")
+            setAdapterServicesToParis()
         else
-            SetAdapterSericesToDefault()
+            setAdapterServicesToDefault()
     }
 
     fun fillEntitiesSpinner(serviceList: ServiceJsonObject) {
         var entitiesList = arrayListOf<String>()
-        for (service in serviceList.features) {
+        for (service in serviceList.features)
             entitiesList.add(service.properties.nom)
-        }
         adapterEntites = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, entitiesList)
-        adapterEntites.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerEntites.setAdapter(adapterEntites)
+        spinnerEntites.adapter = adapterEntites
         adapterEntites.notifyDataSetChanged()
         spinner_entites.visibility = View.VISIBLE
     }
@@ -223,39 +245,23 @@ class ServiceActivity : AppCompatActivity() {
         val cityName = inputCityName.text.toString()
         if (cityName.isNotEmpty()) {
             var cityCode = getCityCodeByName()
-            if (cityCode=="") {
-                //Afficher: la ville n'existe pas
-            }
-            else {
+            if (cityCode.isNotEmpty()) {
                 getServiceDetails(cityCode, spinnerServices.selectedItem.toString())
             }
         }
     }
 
     fun getCityCodeByName(): String {
-        var cityNameInput = city_inputText.text.toString()
+        var cityName = city_inputText.text.toString()
         var cityCode: String = ""
-        for(i in 0..citiesNameList.size-1)
+        for (i in 0..citiesNameList.size-1)
         {
-            if(citiesNameList[i].equals(cityNameInput))
+            if(citiesNameList[i].equals(cityName))
                 cityCode=citiesCodeList[i]
         }
-        selectedCity.text = cityNameInput +" "+ cityCode
+        selectedCity.text = cityName + " " + cityCode
         selectedCity.visibility = View.VISIBLE
         return cityCode
-    }
-
-    //On verifie si le code est de la bonne longueur et est composé de caractères numériques
-    fun checkCityPostalCodeValidity(code: String):Boolean {
-        if(code.length!=5)
-            return false
-
-        for(char in code)
-        {
-            if(char.code <48 || char.code>57)
-                return false
-        }
-        return true
     }
 
     //endregion select city and service
@@ -285,15 +291,4 @@ class ServiceActivity : AppCompatActivity() {
     }
 
     //endregion displaying
-
-    //region TEST et DEBUG
-    fun displayPostalCode(jsonObject: CityJsonObject?){
-        inputCityCode.text = jsonObject?.code
-    }
-
-    fun displayCityname(jsonObject: CityJsonObject){
-        //input_cityName.text = jsonObject?.nom
-    }
-
-    //endregion TEST et DEBUG
 }
