@@ -15,7 +15,7 @@ class SearchByVote_Screen1_Activity:AppCompatActivity() {
         setContentView(R.layout.search_by_vote_screen1)
 
         val home_button = findViewById<Button>(R.id.home_button)
-        val return_button = findViewById<Button>(R.id.return_button)
+        val return_button = findViewById<Button>(R.id.multiTaskButton)
         val test_details_button = findViewById<Button>(R.id.testButton_toDetailsScreen)
 
         home_button.setOnClickListener {

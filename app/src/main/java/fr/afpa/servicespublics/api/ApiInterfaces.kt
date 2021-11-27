@@ -46,5 +46,4 @@ interface IAssembleApi {
 
     @GET("{name}/json?textplain=true")
     fun getDeputyDetails(@Path("name")name: String): Call<deputyDetailsContainer>
-
 }

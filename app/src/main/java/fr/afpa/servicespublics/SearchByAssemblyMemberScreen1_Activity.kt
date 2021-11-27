@@ -19,13 +19,20 @@ import retrofit2.Response
 class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
 
     var clientAssembleApi = ClientAssembleApi()
+
     var deputyNameMap = hashMapOf<String, Int>()
     var autoCompletionNameList = arrayListOf<String>()
     var deputiesIdNameList = arrayListOf<String>()
+    var deputyTenLastVoteList = arrayListOf<voteContainer>()
 
+    //A button used through different screens
+    lateinit var multiTaskButton: Button
+    //Search screen
     lateinit var textInput : AutoCompleteTextView
     lateinit var arrayAdapterName :  ArrayAdapter<String>
     lateinit var resultsTable : TableLayout
+    lateinit var searchLayout: RelativeLayout
+    //Deputy details screen
     lateinit var deputyDetailsLayout : RelativeLayout
     lateinit var deputyNameTextView: TextView
     lateinit var deputyJobTextView: TextView
@@ -33,44 +40,57 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
     lateinit var circonscriptionDetails: TextView
     lateinit var deputyMailTextView: TextView
     lateinit var deputyWebSiteTextView : TextView
+    //vote details screen
+    lateinit var voteDetailsLayout: RelativeLayout
+    lateinit var voteTitleTextView: TextView
+    lateinit var nbVoteForTextView: TextView
+    lateinit var nbVoteAgainstTextView: TextView
+    lateinit var nbVotersTextView: TextView
+    lateinit var nbAbstentionTextView: TextView
 
     var searchByDeputyMode = true
     var selectedDeputyIdName= ""
+
+    enum class InterfaceMode{deputyDetails, voteDetails, searchScreen}
+    var interfaceMode = InterfaceMode.searchScreen
 
     //region init
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_by_assemblymember_screen1)
-
         //Setup buttons
         val home_button = findViewById<Button>(R.id.home_button)
         home_button.setOnClickListener {
             startActivity(Intent(this, NationalAssembly_Menu_Activity::class.java))
         }
 
-        val return_button = findViewById<Button>(R.id.return_button)
-        return_button.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-        }
-
-        val deputyDetailsButton = findViewById<Button>(R.id.deputyDetailsButton)
-        deputyDetailsButton.visibility = View.INVISIBLE
-        deputyDetailsButton.setOnClickListener {
-            //startActivity(Intent(this, SearchByAssemblyMemberInfoVote_Activity::class.java))
-            callGetDeputyDetails()
+        multiTaskButton = findViewById<Button>(R.id.multiTaskButton)
+        multiTaskButton.visibility = View.INVISIBLE
+        multiTaskButton.setOnClickListener {
+            if(interfaceMode==InterfaceMode.searchScreen && searchByDeputyMode==true)
+                callGetDeputyDetails()
+            else if(interfaceMode==InterfaceMode.deputyDetails || interfaceMode==InterfaceMode.voteDetails)
+                displaySearchScreenInterface()
         }
 
         //Get views
         deputyDetailsLayout = findViewById(R.id.deputyDetails)
         textInput = findViewById(R.id.name_inputField)
         resultsTable = findViewById(R.id.details_vote_table)
-        deputyNameTextView = findViewById<Button>(R.id.deputyName)
-        deputyGroupeNameTextView = findViewById<Button>(R.id.deputyGroupeName)
-        deputyJobTextView = findViewById<Button>(R.id.deputyJob)
-        deputyGroupeNameTextView = findViewById<Button>(R.id.deputyGroupeName)
-        circonscriptionDetails = findViewById<Button>(R.id.circonscriptionDetails)
-        deputyMailTextView = findViewById<Button>(R.id.deputyMail)
-        deputyWebSiteTextView = findViewById<Button>(R.id.deputyWebSite)
+        deputyNameTextView = findViewById(R.id.deputyName)
+        deputyGroupeNameTextView = findViewById(R.id.deputyGroupeName)
+        deputyJobTextView = findViewById(R.id.deputyJob)
+        deputyGroupeNameTextView = findViewById(R.id.deputyGroupeName)
+        circonscriptionDetails = findViewById(R.id.circonscriptionDetails)
+        deputyMailTextView = findViewById(R.id.deputyMail)
+        deputyWebSiteTextView = findViewById(R.id.deputyWebSite)
+        searchLayout = findViewById(R.id.searchLayout)
+        voteDetailsLayout = findViewById(R.id.voteDetails)
+        voteTitleTextView = findViewById(R.id.voteTitle)
+        nbVoteForTextView = findViewById(R.id.nbVoteFor)
+        nbVoteAgainstTextView = findViewById(R.id.nbVoteAgainst)
+        nbVotersTextView = findViewById(R.id.nbVoters)
+        nbAbstentionTextView = findViewById(R.id.nbAbstention)
 
         //Installe un TextWatcher pour obtenir des callbacks dès que le texte est modifié dans le champs de saisie du nom député
         textInput.addTextChangedListener(object : TextWatcher {
@@ -129,7 +149,6 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
 
                 else {
                     assemblyJsonObject?.let {
-                        var deputy = assemblyJsonObject.deputes[0].depute
                         fillDeputiesNameList(assemblyJsonObject)
                         //debug
                         Log.d("", "SUCCESS")
@@ -149,9 +168,9 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
 
                 if(voteList == null)
                     Log.d("API", "error, response.body is empty")
-
                 else {
                     voteList?.let {
+                        fillDeputyTenLastVoteList(voteList)
                         fillDeputyLastVoteTable(voteList)
                         Log.d("", "SUCCESS")
                     }
@@ -162,11 +181,12 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
             }
         })
     }
+
     //endregion api
 
+    //region research and get results
     fun callGetDeputyDetails(){
-        resultsTable.visibility = View.INVISIBLE
-        deputyDetailsLayout.visibility = View.VISIBLE
+        displayDeputyDetailsInterface()
         Log.d("DEBUG","selectedDeputyIdName "+ selectedDeputyIdName)
         if(selectedDeputyIdName!="")
             getDeputyDetails()
@@ -184,7 +204,19 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         circonscriptionDetails.text = deputyJsonObject?.nom_circo + " " + deputyJsonObject?.num_deptmt
     }
 
-    fun fillDeputyLastVoteTable(voteList:deputyVoteList ){
+    fun fillDeputyTenLastVoteList(voteList:deputyVoteList)
+    {
+        var endIndex = voteList.votes.size - 1
+        var startIndex = endIndex - 10
+        if(startIndex<0)
+            startIndex = 0
+
+        for(i in startIndex..endIndex) {
+            deputyTenLastVoteList.add(voteList.votes[i])
+        }
+
+    }
+    fun fillDeputyLastVoteTable(voteList:deputyVoteList){
 
         var endIndex = voteList.votes.size - 1
         var startIndex = endIndex - 10
@@ -196,14 +228,38 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
 
         for(i in startIndex..endIndex){
             val row = li.inflate(R.layout.raw_assembly_member2, null)
-            row.findViewById<TextView>(R.id.TitreVoteColumn).text = voteList.votes[i].vote.scrutin.titre
-            row.findViewById<TextView>(R.id.VoteColumn).text = voteList.votes[i].vote.position
+            row.findViewById<TextView>(R.id.titreVoteColumn).text = voteList.votes[i].vote.scrutin.titre
+            row.findViewById<TextView>(R.id.voteColumn).text = voteList.votes[i].vote.position
+            row.findViewById<TextView>(R.id.idColumn).text = voteList.votes[i].vote.scrutin.numero
             resultsTable.addView(row)
 
             row.setOnClickListener(View.OnClickListener { row ->
-                var test = row.findViewById<TextView>(R.id.VoteColumn).text
-                Log.e("output", "is reachable at position" +test)
+                var test = row.findViewById<TextView>(R.id.voteColumn).text
+                displayVoteDetails(row.findViewById<TextView>(R.id.idColumn).text.toString())
             })
+        }
+    }
+
+    fun displayVoteDetails(id: String){
+
+        var voteFinded = false
+        for(voteContainer in deputyTenLastVoteList){
+            if(id==voteContainer.vote.scrutin.numero)
+            {
+                voteFinded = true
+                var scrutin = voteContainer.vote.scrutin
+                displayVoteDetailsInterface()
+                voteTitleTextView.text = scrutin.titre
+                nbVoteForTextView.text = scrutin.nombre_pours
+                nbVoteAgainstTextView.text = scrutin.nombre_contres
+                nbVotersTextView.text = scrutin.nombre_votants
+                nbAbstentionTextView .text = scrutin.nombre_votants
+            }
+        }
+
+        if(voteFinded==false)
+        {
+            //Display error vote not existing
         }
     }
 
@@ -240,7 +296,8 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         else
         {
             getDeputyVoteList(selectedDeputyIdName)
-            deputyDetailsButton.visibility = View.VISIBLE
+            multiTaskButton.visibility = View.VISIBLE
+            multiTaskButton.text = "Détails député"
         }
     }
 
@@ -252,7 +309,9 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
             return ""
         return deputiesIdNameList[indice]
     }
+    //endregion research and get results
 
+    //region interface
     fun onRadioButtonClicked(view: View) {
         if (view is RadioButton) {
             // Is the button now checked?
@@ -273,4 +332,38 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
             }
         }
     }
+
+    fun displayVoteDetailsInterface(){
+        interfaceMode = InterfaceMode.voteDetails
+        resultsTable.visibility = View.INVISIBLE
+        deputyDetailsLayout.visibility = View.INVISIBLE
+        searchLayout.visibility = View.INVISIBLE
+        voteDetailsLayout.visibility = View.VISIBLE
+        multiTaskButton.visibility = View.VISIBLE
+        multiTaskButton.text = "return"
+
+
+    }
+
+    fun displaySearchScreenInterface() {
+        interfaceMode=InterfaceMode.searchScreen
+        resultsTable.visibility = View.VISIBLE
+        deputyDetailsLayout.visibility = View.INVISIBLE
+        searchLayout.visibility = View.VISIBLE
+        voteDetailsLayout.visibility = View.INVISIBLE
+        multiTaskButton.text = "détails député"
+
+    }
+
+    fun displayDeputyDetailsInterface() {
+        interfaceMode= InterfaceMode.deputyDetails
+        resultsTable.visibility = View.INVISIBLE
+        deputyDetailsLayout.visibility = View.VISIBLE
+        searchLayout.visibility = View.INVISIBLE
+        voteDetailsLayout.visibility = View.INVISIBLE
+        multiTaskButton.visibility = View.VISIBLE
+        multiTaskButton.text = "return"
+
+    }
+    //endregion interface
 }

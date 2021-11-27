@@ -13,7 +13,7 @@ class NationalAssembly_Menu_Activity:AppCompatActivity() {
         val searchByVote_button = findViewById<Button>(R.id.button_search_by_vote)
         val searchByMemberName_button = findViewById<Button>(R.id.button_search_by_assemblyMemberName)
         val home_button = findViewById<Button>(R.id.home_button)
-        val return_button = findViewById<Button>(R.id.return_button)
+        val return_button = findViewById<Button>(R.id.multiTaskButton)
 
         home_button?.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))

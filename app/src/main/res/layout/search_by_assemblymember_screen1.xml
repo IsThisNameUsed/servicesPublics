@@ -8,7 +8,7 @@
     <include layout="@layout/header"/>
 
     <RelativeLayout
-        android:id="@+id/content"
+        android:id="@+id/searchLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/details_vote_table"
@@ -20,25 +20,29 @@
             android:id="@+id/radioGroup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
-            <RadioButton android:id="@+id/searchDeputyRadio"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/searchDeputyRadio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="recherche par député"
-                android:onClick="onRadioButtonClicked"/>
-            <RadioButton android:id="@+id/searchVoteRadio"
+                android:onClick="onRadioButtonClicked"
+                android:text="recherche par député" />
+
+            <RadioButton
+                android:id="@+id/searchVoteRadio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="recherche par vote"
-                android:onClick="onRadioButtonClicked"/>
+                android:onClick="onRadioButtonClicked"
+                android:text="recherche par vote" />
         </RadioGroup>
 
         <AutoCompleteTextView
             android:id="@+id/name_inputField"
             android:layout_width="200dp"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:layout_below="@id/radioGroup"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
@@ -48,23 +52,16 @@
             android:textColorHint="#000000"
             android:textSize="15sp" />
 
-        <Button
-            android:id="@+id/button_search_by_vote"
-            android:layout_width="175dp"
-            android:layout_height="35dp"
-            android:layout_below="@id/name_inputField"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:text="Rechercher" />
     </RelativeLayout>
 
     <ScrollView
         android:id="@+id/details_vote_table_scrollView"
+        android:contentDescription="table de résultat des 10 derniers votes"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
-        android:layout_above="@id/deputyDetailsButton"
-        android:layout_below="@id/content"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/searchLayout"
         android:visibility="visible">
 
         <TableLayout
@@ -80,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_below="@id/content"
+        android:layout_below="@id/header"
         android:gravity="center_horizontal"
         android:visibility="invisible">
 
@@ -132,18 +129,132 @@
             android:textSize="18sp"
             android:layout_below="@id/deputyMail"
             android:text="website"/>
-
-
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/deputyDetailsButton"
-        android:layout_width="170dp"
-        android:layout_height="35dp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/footer"
-        android:text="Détails deputé" />
+    <RelativeLayout
+        android:id="@+id/voteDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/header"
+        android:gravity="center_horizontal"
+        android:visibility="invisible">
+        <LinearLayout
+            android:id="@+id/voteTitleLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
+        <TextView
+            android:id="@+id/voteTitleDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="Vote:"/>
+        <TextView
+            android:id="@+id/voteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="qdqdfqdfqfqdsfqf"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/nbVoteForlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_below="@id/voteTitleLayout"
+            android:layout_marginTop="10dp">
+            <TextView
+                android:id="@+id/nbVoteForDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="Nombre votant pour"/>
+            <TextView
+                android:id="@+id/nbVoteFor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:textSize="18sp"
+                android:text="sqdqsdqsddqsd"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/nbVoteAgainstLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_below="@id/nbVoteForlayout"
+            android:layout_marginTop="10dp">
+            <TextView
+                android:id="@+id/nbVoteAgainstDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:layout_below="@id/nbVoteFor"
+                android:text="Nombre votants contre:"/>
+            <TextView
+                android:id="@+id/nbVoteAgainst"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:textSize="18sp"
+                android:layout_below="@id/nbVoteFor"
+                android:text=""/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/nbVotersLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_below="@id/nbVoteAgainstLayout"
+            android:layout_marginTop="10dp">
+            <TextView
+                android:id="@+id/nbVotersDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="Nombre de votants:"/>
+            <TextView
+                android:id="@+id/nbVoters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:textSize="18sp"
+                android:text=""/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/nbAbstentionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_below="@id/nbVotersLayout"
+            android:layout_marginTop="10dp">
+            <TextView
+                android:id="@+id/nbAbstentionDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:textSize="18sp"
+                android:text="Nombre d'abstention:"/>
+            <TextView
+                android:id="@+id/nbAbstention"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:textSize="18sp"
+                android:text=""/>
+        </LinearLayout>
+    </RelativeLayout>
 
-    <include layout="@layout/footer"/>
+    <include layout="@layout/footer" />
 
 </RelativeLayout>

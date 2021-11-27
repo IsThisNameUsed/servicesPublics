@@ -2,23 +2,28 @@
 <TableRow  xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:background="@color/raw_grey">
-
     <TextView
-        android:id="@+id/VoteColumn"
+        android:id="@+id/voteColumn"
         android:layout_column="0"
-
         android:gravity="center"
         android:padding="3dip"
         android:width="50dp"
         android:text="Pour"/>
 
     <TextView
-        android:id="@+id/TitreVoteColumn"
+        android:id="@+id/titreVoteColumn"
         android:layout_column="1"
         android:layout_weight="11"
         android:gravity="center"
         android:padding="3dip"
         android:text="la motion de rejet préalable, déposée par Mme Mathilde Panot, du projet de loi portant diverses dispositions de vigilance sanitaire (lecture définitive)." />
 
+    <TextView
+        android:id="@+id/idColumn"
+        android:layout_column="3"
+        android:gravity="center"
+        android:width="0dp"
+        android:text=""
+        android:visibility="invisible"/>
 
 </TableRow>

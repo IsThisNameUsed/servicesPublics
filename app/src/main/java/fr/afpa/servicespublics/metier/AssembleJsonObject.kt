@@ -39,4 +39,6 @@ data class voteContainer(var vote: vote):Parcelable{}
 data class vote(var scrutin: scrutin, var position: String, var parlementaire_slug: String):Parcelable{}
 
 @Parcelize
-data class scrutin(var sort: String, var date: String, var titre: String, var numero: String ):Parcelable{}
+data class scrutin(var sort: String, var date: String, var titre: String, var numero: String,
+                   var nombre_votants: String, var nombre_pours: String, var nombre_contres: String,
+                    var nombre_abstentions: String ):Parcelable{}
