@@ -18,4 +18,7 @@
     <string name="app_title_header">MES SERVICES PUBLICS</string>
     <string name="menu_assemblee_nationale_title">Menu assemblée nationale</string>
     <string name="footer_string">FOOTER</string>
+    <string name="deputyDetailButtonText">Détails député</string>
+    <string name="mutliTaskButtonReturnText">return</string>
+    <string name="space">\" \"</string>
 </resources>

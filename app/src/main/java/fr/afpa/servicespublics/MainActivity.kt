@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val boutonAssemble = findViewById<Button>(R.id.bouton_assemblee)
         boutonAssemble.setOnClickListener {
-            startActivity(Intent(this, NationalAssembly_Menu_Activity::class.java))
+            startActivity(Intent(this,SearchByAssemblyMemberScreen1Activity::class.java))
         }
     }
 }

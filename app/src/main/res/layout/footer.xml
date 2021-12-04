@@ -9,11 +9,12 @@
 
     <Button
         android:id="@+id/multiTaskButton"
-        android:layout_alignParentRight="true"
         android:layout_width="175dp"
         android:layout_height="50dp"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
-        android:text="Return"/>
+        android:textColor="@color/black"
+        android:text="Return" />
 
     <Button
         android:id="@+id/home_button"
@@ -21,6 +22,7 @@
         android:layout_width="175dp"
         android:layout_height="50dp"
         android:layout_marginLeft="15dp"
+        android:textColor="@color/black"
         android:text="Home"/>
 
 </RelativeLayout>

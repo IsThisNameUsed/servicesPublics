@@ -16,7 +16,7 @@ class SearchByAssemblyMemberInfoVote_Activity: AppCompatActivity() {
         val return_button = findViewById<Button>(R.id.multiTaskButton)
 
         home_button.setOnClickListener {
-            startActivity(Intent(this, SearchByAssemblyMemberScreen1_Activity::class.java))
+            startActivity(Intent(this, SearchByAssemblyMemberScreen1Activity::class.java))
         }
 
         return_button.setOnClickListener {

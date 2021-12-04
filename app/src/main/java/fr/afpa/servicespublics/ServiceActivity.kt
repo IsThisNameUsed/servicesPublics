@@ -137,8 +137,6 @@ class ServiceActivity : AppCompatActivity() {
         }
     }
 
-
-
     //region appel API's
 
     fun getCitiesListByName(input: String){
@@ -188,7 +186,7 @@ class ServiceActivity : AppCompatActivity() {
     }
 
     fun getServiceDetails(cityCode:String, typeService:String) {
-        //On accède ici par le choix d'une ville ET d'un type de service dans les spinners appropriés
+        //On accède ici par le choix d'une ville ET d'un type de service
         cleanServiceDetails()
         clientServiceAPI.service.getServiceInCity(cityCode, typeService).enqueue(object : Callback<ServiceJsonObject> {
             override fun onResponse(call: Call<ServiceJsonObject>, response: Response<ServiceJsonObject>) {
@@ -287,7 +285,7 @@ class ServiceActivity : AppCompatActivity() {
 
     fun displayNoCityAvailable()
     {
-        //Afficher un message comme quoi la recherche n'a pas aboutie avec les données renseignées
+        TODO("Afficher un message comme quoi la recherche n'a pas aboutie avec les données renseignées")
     }
 
     //endregion displaying

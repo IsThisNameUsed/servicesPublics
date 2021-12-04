@@ -9,4 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="raw_white">#FFFFFFFF</color>
     <color name="raw_grey">#cfd8dc</color>
+    <color name="raw_Darkgrey">#9ea7aa</color>
+    <color name="blueButton">#40c4ff</color>
+    <color name="darkBlue">#0094cc</color>
+    <color name="lightBlue">#b2ebf2</color>
+
+
 </resources>

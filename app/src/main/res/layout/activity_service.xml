@@ -9,9 +9,9 @@
 
     <LinearLayout
         android:id="@+id/header"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:background="@color/darkBlue"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/layout_recherche"
         app:layout_constraintStart_toStartOf="@+id/layout_recherche"
@@ -23,27 +23,15 @@
 
             <TextView
                 android:id="@+id/label_titre"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:text="MES SERVICES PUBLICS"
-                android:textColor="#000000"
-                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textSize="30sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/icon_aide"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/label_titre"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_help" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
@@ -91,6 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="12"
                     android:hint="Ville"
+                    android:background="@color/lightBlue"
                     android:minHeight="48dp"
                     android:textAlignment="center"
                     android:textColor="#000000"
@@ -167,6 +156,7 @@
                         android:text="Me localiser"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="#000000"
+                        android:background="@color/blueButton"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/group_bouton_reseau" />
@@ -208,18 +198,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/label_ville_code"
         tools:ignore="SpeakableTextPresentCheck"
-        tools:visibility="visible" />
+        tools:visibility="visible"/>
 
     <Spinner
         android:id="@+id/spinner_entites"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp"
+        android:animateLayoutChanges="false"
+        android:animationCache="false"
+        android:clickable="false"
         android:minHeight="48dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner_services"
         tools:ignore="SpeakableTextPresentCheck" />
@@ -231,6 +225,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
+        android:foreground="@android:drawable/arrow_down_float"
         android:orientation="horizontal"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -247,7 +242,8 @@
         <ScrollView
             android:id="@+id/scroll_view_info"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/lightBlue">
 
             <LinearLayout
                 android:id="@+id/layout_scroll_view_info"

@@ -11,65 +11,65 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import fr.afpa.servicespublics.api.ClientAssembleApi
 import fr.afpa.servicespublics.metier.*
-import kotlinx.android.synthetic.main.search_by_assemblymember_screen1.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
+class SearchByAssemblyMemberScreen1Activity: AppCompatActivity() {
 
-    var clientAssembleApi = ClientAssembleApi()
+    private var clientAssembleApi = ClientAssembleApi()
 
-    var deputyNameMap = hashMapOf<String, Int>()
-    var autoCompletionNameList = arrayListOf<String>()
-    var deputiesIdNameList = arrayListOf<String>()
-    var deputyTenLastVoteList = arrayListOf<voteContainer>()
+    private var deputyNameMap = hashMapOf<String, Int>()
+    private var autoCompletionNameList = arrayListOf<String>()
+    private var deputiesIdNameList = arrayListOf<String>()
+    private var deputyTenLastVoteList = arrayListOf<voteContainer>()
 
+    private lateinit var loadBar: ProgressBar
     //A button used through different screens
-    lateinit var multiTaskButton: Button
+    private lateinit var multiTaskButton: Button
     //Search screen
-    lateinit var textInput : AutoCompleteTextView
-    lateinit var arrayAdapterName :  ArrayAdapter<String>
-    lateinit var resultsTable : TableLayout
-    lateinit var searchLayout: RelativeLayout
+    private lateinit var textInput : AutoCompleteTextView
+    private lateinit var arrayAdapterName :  ArrayAdapter<String>
+    private lateinit var resultsTable : TableLayout
+    private lateinit var searchLayout: RelativeLayout
     //Deputy details screen
-    lateinit var deputyDetailsLayout : RelativeLayout
-    lateinit var deputyNameTextView: TextView
-    lateinit var deputyJobTextView: TextView
-    lateinit var deputyGroupeNameTextView: TextView
-    lateinit var circonscriptionDetails: TextView
-    lateinit var deputyMailTextView: TextView
-    lateinit var deputyWebSiteTextView : TextView
+    private lateinit var deputyDetailsLayout : RelativeLayout
+    private lateinit var deputyNameTextView: TextView
+    private lateinit var deputyJobTextView: TextView
+    private lateinit var deputyGroupNameTextView: TextView
+    private lateinit var circonscriptionDetails: TextView
+    private lateinit var deputyMailTextView: TextView
+    private lateinit var deputyWebSiteTextView : TextView
     //vote details screen
-    lateinit var voteDetailsLayout: RelativeLayout
-    lateinit var voteTitleTextView: TextView
-    lateinit var nbVoteForTextView: TextView
-    lateinit var nbVoteAgainstTextView: TextView
-    lateinit var nbVotersTextView: TextView
-    lateinit var nbAbstentionTextView: TextView
+    private lateinit var voteDetailsLayout: RelativeLayout
+    private lateinit var voteTitleTextView: TextView
+    private lateinit var nbVoteForTextView: TextView
+    private lateinit var nbVoteAgainstTextView: TextView
+    private lateinit var nbVotersTextView: TextView
+    private lateinit var nbAbstentionTextView: TextView
 
-    var searchByDeputyMode = true
-    var selectedDeputyIdName= ""
+    private var searchByDeputyMode = true
+    private var selectedDeputyIdName= ""
 
-    enum class InterfaceMode{deputyDetails, voteDetails, searchScreen}
-    var interfaceMode = InterfaceMode.searchScreen
+    enum class InterfaceMode{DeputyDetails, VoteDetails, SearchScreen}
+    private var interfaceMode = InterfaceMode.SearchScreen
 
     //region init
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_by_assemblymember_screen1)
         //Setup buttons
-        val home_button = findViewById<Button>(R.id.home_button)
-        home_button.setOnClickListener {
-            startActivity(Intent(this, NationalAssembly_Menu_Activity::class.java))
+        val homeButton = findViewById<Button>(R.id.home_button)
+        homeButton.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
         }
 
-        multiTaskButton = findViewById<Button>(R.id.multiTaskButton)
+        multiTaskButton = findViewById(R.id.multiTaskButton)
         multiTaskButton.visibility = View.INVISIBLE
         multiTaskButton.setOnClickListener {
-            if(interfaceMode==InterfaceMode.searchScreen && searchByDeputyMode==true)
+            if(interfaceMode==InterfaceMode.SearchScreen && searchByDeputyMode)
                 callGetDeputyDetails()
-            else if(interfaceMode==InterfaceMode.deputyDetails || interfaceMode==InterfaceMode.voteDetails)
+            else if(interfaceMode==InterfaceMode.DeputyDetails || interfaceMode==InterfaceMode.VoteDetails)
                 displaySearchScreenInterface()
         }
 
@@ -78,9 +78,9 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         textInput = findViewById(R.id.name_inputField)
         resultsTable = findViewById(R.id.details_vote_table)
         deputyNameTextView = findViewById(R.id.deputyName)
-        deputyGroupeNameTextView = findViewById(R.id.deputyGroupeName)
+        deputyGroupNameTextView = findViewById(R.id.deputyGroupeName)
         deputyJobTextView = findViewById(R.id.deputyJob)
-        deputyGroupeNameTextView = findViewById(R.id.deputyGroupeName)
+        deputyGroupNameTextView = findViewById(R.id.deputyGroupeName)
         circonscriptionDetails = findViewById(R.id.circonscriptionDetails)
         deputyMailTextView = findViewById(R.id.deputyMail)
         deputyWebSiteTextView = findViewById(R.id.deputyWebSite)
@@ -91,8 +91,9 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         nbVoteAgainstTextView = findViewById(R.id.nbVoteAgainst)
         nbVotersTextView = findViewById(R.id.nbVoters)
         nbAbstentionTextView = findViewById(R.id.nbAbstention)
+        loadBar = findViewById(R.id.loadDeputyListProgressBar)
 
-        //Installe un TextWatcher pour obtenir des callbacks dès que le texte est modifié dans le champs de saisie du nom député
+        //Installe un TextWatcher pour obtenir des callbacks dès que le texte est modifié dans le champs de saisie du nom du député
         textInput.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(input: CharSequence, start: Int, before: Int, count: Int) {
                 //fillSortedDeputiesNameList(input)
@@ -113,20 +114,20 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
     //endregion init
 
     //region api
-    fun getDeputyDetails(){
+    private fun getDeputyDetails(){
         clientAssembleApi.service.getDeputyDetails(selectedDeputyIdName).enqueue(object : Callback<deputyDetailsContainer> {
             override fun onResponse(call: Call<deputyDetailsContainer>, response: Response<deputyDetailsContainer>) {
-                var deputyJsonObject = response.body()
+                val deputyJsonObject = response.body()
                 Log.d("API", "getDeputyDetails")
                 if(deputyJsonObject == null)
                     Log.d("API", "error, response.body is empty")
                 else {
-                    deputyJsonObject?.let {
-                        val deputyDetails = deputyJsonObject?.depute
+                    deputyJsonObject.let {
+                        val deputyDetails = deputyJsonObject.depute
                         displayDeputyDetails(deputyDetails)
-                        Log.d("API", deputyJsonObject?.depute?.nom)
-                        Log.d("API", deputyJsonObject?.depute?.profession)
-                        Log.d("API", deputyJsonObject?.depute?.emails[0]?.email)
+                        Log.d("API", deputyJsonObject.depute.nom)
+                        Log.d("API", deputyJsonObject.depute.profession)
+                        Log.d("API", deputyJsonObject.depute.emails[0].email)
                         //debug
                         Log.d("API", "SUCCESS")
                     }
@@ -139,16 +140,16 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         })
     }
 
-    fun getDeputyList(){
+    private fun getDeputyList(){
         clientAssembleApi.service.getDeputyList().enqueue(object : Callback<assemblyDeputiesListJson> {
             override fun onResponse(call: Call<assemblyDeputiesListJson>, response: Response<assemblyDeputiesListJson>) {
-                var assemblyJsonObject = response.body()
+                val assemblyJsonObject = response.body()
 
                 if(assemblyJsonObject == null)
                     Log.d("API", "error, response.body is empty")
 
                 else {
-                    assemblyJsonObject?.let {
+                    assemblyJsonObject.let {
                         fillDeputiesNameList(assemblyJsonObject)
                         //debug
                         Log.d("", "SUCCESS")
@@ -161,15 +162,15 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         })
     }
 
-    fun getDeputyVoteList(name: String){
+    private fun getDeputyVoteList(name: String){
         clientAssembleApi.service.getDeputyVoteList(name).enqueue(object : Callback<deputyVoteList> {
             override fun onResponse(call: Call<deputyVoteList>, response: Response<deputyVoteList>) {
-                var voteList = response.body()
+                val voteList = response.body()
 
                 if(voteList == null)
                     Log.d("API", "error, response.body is empty")
                 else {
-                    voteList?.let {
+                    voteList.let {
                         fillDeputyTenLastVoteList(voteList)
                         fillDeputyLastVoteTable(voteList)
                         Log.d("", "SUCCESS")
@@ -185,28 +186,27 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
     //endregion api
 
     //region research and get results
-    fun callGetDeputyDetails(){
+    private fun callGetDeputyDetails(){
         displayDeputyDetailsInterface()
-        Log.d("DEBUG","selectedDeputyIdName "+ selectedDeputyIdName)
         if(selectedDeputyIdName!="")
             getDeputyDetails()
         else{
-            //Afficher un message?
+            TODO("Afficher un message (une erreur est survenue...")
         }
     }
 
     fun displayDeputyDetails(deputyJsonObject: deputyDetails){
-        deputyNameTextView.text = deputyJsonObject?.nom
-        deputyJobTextView.text = deputyJsonObject?.profession
-        deputyWebSiteTextView.text = deputyJsonObject?.sites_web[0].site
-        deputyMailTextView.text = deputyJsonObject?.emails[0]?.email
-        deputyGroupeNameTextView.text = deputyJsonObject?.groupe_sigle +" " +  deputyJsonObject?.parti_ratt_financier
-        circonscriptionDetails.text = deputyJsonObject?.nom_circo + " " + deputyJsonObject?.num_deptmt
+        deputyNameTextView.text = deputyJsonObject.nom
+        deputyJobTextView.text = deputyJsonObject.profession
+        deputyWebSiteTextView.text = deputyJsonObject.sites_web[0].site
+        deputyMailTextView.text = deputyJsonObject.emails[0].email
+        deputyGroupNameTextView.text = deputyJsonObject.groupe_sigle +getString(R.string.space) +  deputyJsonObject.parti_ratt_financier
+        circonscriptionDetails.text = deputyJsonObject.nom_circo + getString(R.string.space) + deputyJsonObject.num_deptmt
     }
 
     fun fillDeputyTenLastVoteList(voteList:deputyVoteList)
     {
-        var endIndex = voteList.votes.size - 1
+        val endIndex = voteList.votes.size - 1
         var startIndex = endIndex - 10
         if(startIndex<0)
             startIndex = 0
@@ -214,17 +214,16 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         for(i in startIndex..endIndex) {
             deputyTenLastVoteList.add(voteList.votes[i])
         }
-
     }
+
     fun fillDeputyLastVoteTable(voteList:deputyVoteList){
 
-        var endIndex = voteList.votes.size - 1
+        val endIndex = voteList.votes.size - 1
         var startIndex = endIndex - 10
         if(startIndex<0)
             startIndex = 0
 
         val li = LayoutInflater.from(applicationContext)
-        val row = li.inflate(R.layout.raw_assembly_member2, null)
 
         for(i in startIndex..endIndex){
             val row = li.inflate(R.layout.raw_assembly_member2, null)
@@ -232,22 +231,26 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
             row.findViewById<TextView>(R.id.voteColumn).text = voteList.votes[i].vote.position
             row.findViewById<TextView>(R.id.idColumn).text = voteList.votes[i].vote.scrutin.numero
             resultsTable.addView(row)
-
-            row.setOnClickListener(View.OnClickListener { row ->
-                var test = row.findViewById<TextView>(R.id.voteColumn).text
+            if(resultsTable.indexOfChild(row)%2==0)
+                row.setBackgroundColor(getColor(R.color.raw_Darkgrey))
+            else row.setBackgroundColor(getColor(R.color.raw_grey))
+            row.setOnClickListener { row ->
                 displayVoteDetails(row.findViewById<TextView>(R.id.idColumn).text.toString())
-            })
+            }
         }
+        loadBar.visibility = View.INVISIBLE
+        multiTaskButton.visibility = View.VISIBLE
+        multiTaskButton.text = getString(R.string.deputyDetailButtonText)
     }
 
-    fun displayVoteDetails(id: String){
+    private fun displayVoteDetails(id: String){
 
         var voteFinded = false
         for(voteContainer in deputyTenLastVoteList){
             if(id==voteContainer.vote.scrutin.numero)
             {
                 voteFinded = true
-                var scrutin = voteContainer.vote.scrutin
+                val scrutin = voteContainer.vote.scrutin
                 displayVoteDetailsInterface()
                 voteTitleTextView.text = scrutin.titre
                 nbVoteForTextView.text = scrutin.nombre_pours
@@ -257,16 +260,16 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
             }
         }
 
-        if(voteFinded==false)
+        if(!voteFinded)
         {
-            //Display error vote not existing
+            TODO("Display error vote not existing")
         }
     }
 
-    //Rempli la liste de tous les députés de l'assemblé qui sert de référence
+    //Rempli la liste de tous les députés qui sert de référence
     fun fillDeputiesNameList(deputiesList:assemblyDeputiesListJson) {
-        for(i in 0..deputiesList.deputes.size-1){
-            deputyNameMap.put(deputiesList.deputes[i].depute.nom, i)
+        for(i in 0 until deputiesList.deputes.size-1){
+            deputyNameMap[deputiesList.deputes[i].depute.nom] = i
             deputiesIdNameList.add(deputiesList.deputes[i].depute.slug)
         }
 
@@ -277,13 +280,15 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         arrayAdapterName = ArrayAdapter(this, android.R.layout.simple_list_item_1, autoCompletionNameList.toTypedArray())
         textInput.setAdapter(arrayAdapterName)
         arrayAdapterName.notifyDataSetChanged()
+        loadBar.visibility = View.INVISIBLE
+        searchLayout.visibility = View.VISIBLE
     }
 
     fun cleanResultsTable(){
         resultsTable.removeAllViews()
     }
 
-    fun selectDeputy(name:String?) {
+    private fun selectDeputy(name:String?) {
         if(name == null || name.isEmpty())
             return
 
@@ -295,18 +300,14 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         }
         else
         {
+            loadBar.visibility = View.VISIBLE
             getDeputyVoteList(selectedDeputyIdName)
-            multiTaskButton.visibility = View.VISIBLE
-            multiTaskButton.text = "Détails député"
         }
     }
 
     //IdName is named slug on the API, it is the reference ID for a call on a specific deputy
-    fun getDeputyIdName(name:String): String{
-        var indice = deputyNameMap.get(name)
-
-        if(indice==null)
-            return ""
+    private fun getDeputyIdName(name:String): String{
+        val indice = deputyNameMap[name] ?: return ""
         return deputiesIdNameList[indice]
     }
     //endregion research and get results
@@ -333,36 +334,36 @@ class SearchByAssemblyMemberScreen1_Activity: AppCompatActivity() {
         }
     }
 
-    fun displayVoteDetailsInterface(){
-        interfaceMode = InterfaceMode.voteDetails
+    private fun displayVoteDetailsInterface(){
+        interfaceMode = InterfaceMode.VoteDetails
         resultsTable.visibility = View.INVISIBLE
         deputyDetailsLayout.visibility = View.INVISIBLE
         searchLayout.visibility = View.INVISIBLE
         voteDetailsLayout.visibility = View.VISIBLE
         multiTaskButton.visibility = View.VISIBLE
-        multiTaskButton.text = "return"
+        multiTaskButton.text = getString(R.string.mutliTaskButtonReturnText)
 
 
     }
 
-    fun displaySearchScreenInterface() {
-        interfaceMode=InterfaceMode.searchScreen
+    private fun displaySearchScreenInterface() {
+        interfaceMode=InterfaceMode.SearchScreen
         resultsTable.visibility = View.VISIBLE
         deputyDetailsLayout.visibility = View.INVISIBLE
         searchLayout.visibility = View.VISIBLE
         voteDetailsLayout.visibility = View.INVISIBLE
-        multiTaskButton.text = "détails député"
+        multiTaskButton.text = getString(R.string.deputyDetailButtonText)
 
     }
 
-    fun displayDeputyDetailsInterface() {
-        interfaceMode= InterfaceMode.deputyDetails
+    private fun displayDeputyDetailsInterface() {
+        interfaceMode= InterfaceMode.DeputyDetails
         resultsTable.visibility = View.INVISIBLE
         deputyDetailsLayout.visibility = View.VISIBLE
         searchLayout.visibility = View.INVISIBLE
         voteDetailsLayout.visibility = View.INVISIBLE
         multiTaskButton.visibility = View.VISIBLE
-        multiTaskButton.text = "return"
+        multiTaskButton.text = getString(R.string.mutliTaskButtonReturnText)
 
     }
     //endregion interface

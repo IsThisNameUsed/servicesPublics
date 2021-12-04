@@ -28,7 +28,7 @@ class NationalAssembly_Menu_Activity:AppCompatActivity() {
         }
 
         searchByMemberName_button?.setOnClickListener {
-            startActivity(Intent(this,SearchByAssemblyMemberScreen1_Activity::class.java))
+            startActivity(Intent(this,SearchByAssemblyMemberScreen1Activity::class.java))
         }
     }
 }
